@@ -1,0 +1,33 @@
+## RESKE Admin Tool KBase UI Plugin
+---
+package:
+  author: Erik Pearson
+  name: reske-genome-browser
+  description: An prototype genome browser for showing off GO vis
+source:
+  modules:
+  styles:
+install:
+  widgets:
+    -
+      id: kb_reskeGenomeBrowser_main
+      module: panel
+      type: factory
+  ko-components:
+  routes:
+    -
+      path: 
+        - reske
+        - genome-browser
+        - 
+          type: param
+          name: ref
+      widget: kb_reskeGenomeBrowser_main
+      authorization: true
+  menus:
+    -
+      name: reske-genome-browser
+      definition:
+        path: reske/genome-browser
+        icon: circle-o
+        label: Reske Gene Widget

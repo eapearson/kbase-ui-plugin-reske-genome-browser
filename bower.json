@@ -1,0 +1,17 @@
+{
+  "name": "kbase-ui-plugin-reske-genome-browser",
+  "authors": [
+    "Erik Pearson <eapearson@lbl.gov>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "LICENSE IN LICENSE",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

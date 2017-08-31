@@ -1,0 +1,22 @@
+{
+  "name": "kbase-ui-plugin-reske-genome-browser",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbase/kbase-ui-plugin-reske-genome-browser.git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/kbase/kbase-ui-plugin-reske-genome-browser/issues"
+  },
+  "homepage": "https://github.com/kbase/kbase-ui-plugin-reske-genome-browser#readme",
+  "devDependencies": {
+    "eslint": "^4.5.0"
+  }
+}
