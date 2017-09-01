@@ -165,8 +165,6 @@ define([
             });
         });
 
-        console.log('segments', segments);
-
         var radialCommunity = buildRadial({
             x: x,
             y: y,

@@ -13,21 +13,44 @@ install:
       id: kb_reskeGenomeBrowser_main
       module: panel
       type: factory
+    -
+      id: kb_reskeGenomeBrowser_geneTermTester
+      module: geneTermComparisonTester
+      type: factory       
   ko-components:
+    -
+      name: reske/gene-term/genomes-browser
+      module: components/genomesBrowser
+      css: false
+    -
+      name: reske/gene-term/features-browser
+      module: components/featuresBrowser
+      css: false
+    -
+      name: reske/gene-term/term-relations-viewer
+      module: components/termRelations
+      css: false
+    -
+      name: reske/gene-term/term-comparison-viewer
+      module: components/termComparison
+      css: false
   routes:
     -
       path: 
         - reske
         - genome-browser
-        - 
-          type: param
-          name: ref
       widget: kb_reskeGenomeBrowser_main
       authorization: true
+    -
+      path: 
+        - reske
+        - gene-term-tester
+      widget: kb_reskeGenomeBrowser_geneTermTester
+      authorization: true      
   menus:
     -
       name: reske-genome-browser
       definition:
         path: reske/genome-browser
         icon: circle-o
-        label: Reske Gene Widget
+        label: Reske Genome Playground
