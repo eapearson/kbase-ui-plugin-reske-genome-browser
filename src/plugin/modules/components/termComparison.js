@@ -231,7 +231,7 @@ define([
         var arg = {
             config: {
                 width: 300,
-                height: 300,
+                height: 600,
                 x: 150,
                 y: 150,
                 predictions: {
@@ -286,8 +286,8 @@ define([
     function viewModel(params) {
         var termRelationsMap = ko.observable();
         var config = {
-            width: 500,
-            height: 300,
+            width: 300,
+            height: 550,
             x: 150,
             y: 150,
             ringWidth: 10,
@@ -400,8 +400,8 @@ define([
 
         function makeLegend() {
 
-            var xLegend = 250;
-            var yLegend = 25;
+            var xLegend = 50;
+            var yLegend = 300;
             var itemHeight = 50;
             var legendBoxLeftPadding = 10;
             var legendBoxTopPadding = 10;
@@ -412,7 +412,7 @@ define([
                     y: yLegend,
                     width: 200,
                     height: 250,
-                    swatchSize: 30
+                    swatchSize: 20
                 },
                 termRelations: {}
             };
