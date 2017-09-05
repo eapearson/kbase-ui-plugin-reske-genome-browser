@@ -292,7 +292,12 @@ define([
                             }, [
                                 div({
                                     style: {
-                                        fontWeight: 'bold'
+                                        fontWeight: 'bold',
+                                        color: '#FFF',
+                                        backgroundColor: '#777',
+                                        padding: '4px',
+                                        marginBottom: '4px',
+                                        textAlign: 'center'
                                     }
                                 }, [
                                     'Selected Genome'
@@ -308,11 +313,17 @@ define([
                                     span({
                                         dataBind: {
                                             text: 'data.scientific_name'
+                                        },
+                                        style: {
+                                            fontStyle: 'italic'
                                         }
                                     })
                                 ]),
                                 table({
-                                    class: 'table'
+                                    class: 'table',
+                                    style: {
+                                        marginTop: '6px'
+                                    }
                                 }, [
                                     tr([
                                         th('ID'),
@@ -352,6 +363,18 @@ define([
                                     with: 'vm.selectedFeature'
                                 }
                             }, [
+                                div({
+                                    style: {
+                                        fontWeight: 'bold',
+                                        color: '#FFF',
+                                        backgroundColor: '#777',
+                                        padding: '4px',
+                                        marginBottom: '4px',
+                                        textAlign: 'center'
+                                    }
+                                }, [
+                                    'Selected Feature'
+                                ]),
                                 table({
                                     class: 'table'
                                 }, [
