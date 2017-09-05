@@ -16,12 +16,12 @@ define([
         td = t('td');
 
     function viewModel(params) {
-        function doSelectGenome(data) {
-            params.vm.selectedGenome(data);
+        function doSelectFeature(data) {
+            params.searchVM.selectedFeature(data);
         }
         return {
-            doSelectGenome: doSelectGenome,
-            vm: params.vm
+            doSelectFeature: doSelectFeature,
+            vm: params.searchVM
         };
     }
 
@@ -31,47 +31,65 @@ define([
         }, [
             thead([
                 tr([
-                    th('Domain'),
-                    th('Scientific name'),
-                    th('Id'),
-                    th('Features'),
+                    th('#'),
+                    th('Name'),
+                    th('Distance'),
+                    th('Community'),
+                    th(),
+                    th('KBase'),
+                    th(),
                     th()
                 ])
             ]),
             tbody({
                 dataBind: {
-                    foreach: 'vm.genomes'
+                    foreach: 'vm.features'
                 }
             }, [
                 tr([
                     td({
                         dataBind: {
-                            text: 'data.domain'
+                            text: 'rowNumber'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'data.scientific_name'
+                            text: 'feature_name'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'data.id'
+                            text: 'formatted.distance'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_id'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'kbase_term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_id'
                         }
                     }),
 
-                    td({
-                        dataBind: {
-                            text: 'data.features'
-                        }
-                    }),
                     td({
                         style: {
                             textAlign: 'right'
                         }
                     }, button({
                         dataBind: {
-                            click: '$component.doSelectGenome'
+                            click: '$component.doSelectFeature'
                         },
                         class: 'btn btn-default'
                     }, '>'))

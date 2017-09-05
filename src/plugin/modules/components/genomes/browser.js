@@ -17,11 +17,11 @@ define([
 
     function viewModel(params) {
         function doSelectGenome(data) {
-            params.vm.selectedGenome(data);
+            params.searchVM.selectedGenome(data);
         }
         return {
             doSelectGenome: doSelectGenome,
-            vm: params.vm
+            vm: params.searchVM
         };
     }
 
@@ -31,6 +31,7 @@ define([
         }, [
             thead([
                 tr([
+                    th('#'),
                     th('Domain'),
                     th('Scientific name'),
                     th('Id'),
@@ -44,6 +45,11 @@ define([
                 }
             }, [
                 tr([
+                    td({
+                        dataBind: {
+                            text: 'rowNumber + 1'
+                        }
+                    }),
                     td({
                         dataBind: {
                             text: 'data.domain'

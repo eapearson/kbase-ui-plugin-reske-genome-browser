@@ -32,7 +32,11 @@ define([
             thead([
                 tr([
                     th('Name'),
-                    th('distance'),
+                    th('Distance'),
+                    th('Community'),
+                    th(),
+                    th('KBase'),
+                    th(),
                     th()
                 ])
             ]),
@@ -52,6 +56,27 @@ define([
                             text: 'formatted.distance'
                         }
                     }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_id'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'kbase_term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'community_term_id'
+                        }
+                    }),
+
                     td({
                         style: {
                             textAlign: 'right'

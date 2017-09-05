@@ -18,10 +18,10 @@ install:
       module: geneTermComparisonTester
       type: factory       
   ko-components:
-    -
-      name: reske/gene-term/genomes-browser
-      module: components/genomesBrowser
-      css: false
+    # -
+    #   name: reske/gene-term/genomes-browser
+    #   module: components/genomesBrowser
+    #   css: false
     -
       name: reske/gene-term/features-browser
       module: components/featuresBrowser
@@ -34,6 +34,34 @@ install:
       name: reske/gene-term/term-comparison-viewer
       module: components/termComparison
       css: false
+    -
+      name: reske/genome-browser/search/ui
+      module: components/search/ui
+      css: false
+    -
+      name: reske/genome-browser/search/controls
+      module: components/search/controls
+      css: false
+    -
+      name: reske/genome-browser/search/browser
+      module: components/search/browser
+      css: false
+    -
+      name: reske/genome-browser/genomes/ui
+      module: components/genomes/ui
+      css: false
+    -
+      name: reske/genome-browser/genomes/browser
+      module: components/genomes/browser
+      css: false
+    -
+      name: reske/genome-browser/features/ui
+      module: components/features/ui
+      css: false
+    -
+      name: reske/genome-browser/features/browser
+      module: components/features/browser
+      css: false      
   routes:
     -
       path: 
