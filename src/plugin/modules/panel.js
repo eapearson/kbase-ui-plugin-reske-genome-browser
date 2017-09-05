@@ -23,7 +23,11 @@ define([
         h3 = t('h3'),
         a = t('a'),
         button = t('button'),
-        p = t('p');
+        p = t('p'),
+        table = t('table'),
+        tr = t('tr'),
+        th = t('th'),
+        td = t('td');
 
     function factory(config) {
         var runtime = config.runtime,
@@ -307,27 +311,32 @@ define([
                                         }
                                     })
                                 ]),
-                                div([
-                                    span('ID:'),
-                                    span({
-                                        dataBind: {
-                                            text: 'data.id'
-                                        }
-                                    })
-                                ]),
-                                div([
-                                    span('# Features:'),
-                                    span({
-                                        dataBind: {
-                                            text: 'data.features'
-                                        }
-                                    })
+                                table({
+                                    class: 'table'
+                                }, [
+                                    tr([
+                                        th('ID'),
+                                        td({
+                                            dataBind: {
+                                                text: 'data.id'
+                                            }
+                                        })
+                                    ]),
+                                    tr([
+                                        th('# Features'),
+                                        td({
+                                            dataBind: {
+                                                text: 'data.features'
+                                            }
+                                        })
+                                    ])
                                 ]),
                                 button({
+                                    class: 'btn btn-default',
                                     dataBind: {
                                         click: '$root.vm.doUnselectGenome'
                                     }
-                                }, 'Clear')
+                                }, 'Clear &amp; Select Genome')
                             ]),
                             '<!-- /ko -->',
                             '<!-- ko if: !vm.selectedGenome() -->',
@@ -343,27 +352,76 @@ define([
                                     with: 'vm.selectedFeature'
                                 }
                             }, [
-                                div([
-                                    span('Name:'),
-                                    span({
-                                        dataBind: {
-                                            text: 'feature_name'
-                                        }
-                                    })
-                                ]),
-                                div([
-                                    span('Distance:'),
-                                    span({
-                                        dataBind: {
-                                            text: 'formatted.distance'
-                                        }
-                                    })
+                                table({
+                                    class: 'table'
+                                }, [
+                                    tr([
+                                        th('Id'),
+                                        td({
+                                            dataBind: {
+                                                text: 'feature_id'
+                                            }
+                                        })
+                                    ]),
+                                    tr([
+                                        th('Name'),
+                                        td({
+                                            dataBind: {
+                                                text: 'feature_name'
+                                            }
+                                        })
+                                    ]),
+                                    tr([
+                                        th('Distance'),
+                                        td({
+                                            dataBind: {
+                                                text: 'formatted.distance'
+                                            }
+                                        })
+                                    ]),
+                                    tr([
+                                        th('Community'),
+                                        td([
+                                            div({
+                                                dataBind: {
+                                                    text: 'community_term_name'
+                                                }
+                                            }),
+                                            div({
+                                                dataBind: {
+                                                    text: 'community_term_id'
+                                                },
+                                                style: {
+                                                    fontStyle: 'italic'
+                                                }
+                                            })
+                                        ])
+                                    ]),
+                                    tr([
+                                        th('KBase'),
+                                        td([
+                                            div({
+                                                dataBind: {
+                                                    text: 'kbase_term_name'
+                                                }
+                                            }),
+                                            div({
+                                                dataBind: {
+                                                    text: 'kbase_term_id'
+                                                },
+                                                style: {
+                                                    fontStyle: 'italic'
+                                                }
+                                            })
+                                        ])
+                                    ])
                                 ]),
                                 button({
+                                    class: 'btn btn-default',
                                     dataBind: {
                                         click: '$root.vm.doUnselectFeature'
                                     }
-                                }, 'Clear')
+                                }, 'Clear &amp; Select Feature')
                             ]),
                             '<!-- /ko -->',
                             '<!-- ko if: vm.selectedGenome() && !vm.selectedFeature() -->',

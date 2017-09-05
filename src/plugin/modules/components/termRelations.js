@@ -21,7 +21,7 @@ define([
         };
     }
 
-    function template() {
+    function buildTermRelations() {
         return div({
             dataBind: {
                 foreach: 'vm.termRelations'
@@ -78,6 +78,34 @@ define([
                 })
             ]),
         ]));
+    }
+
+    function buildFeature() {
+        return div({
+
+        }, table({
+            class: 'table table-striped'
+        }, [
+            tr([
+                th({
+                    style: {
+                        width: '40%'
+                    }
+                }, 'Feature ID'),
+                td({
+                    dataBind: {
+                        text: 'vm.selectedFeature().feature_id'
+                    }
+                })
+            ])
+        ]));
+    }
+
+    function template() {
+        return div([
+            buildFeature(),
+            buildTermRelations()
+        ]);
     }
 
     function component() {
