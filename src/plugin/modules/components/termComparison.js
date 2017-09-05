@@ -400,7 +400,7 @@ define([
 
         function makeLegend() {
 
-            var xLegend = 50;
+            var xLegend = 10;
             var yLegend = 300;
             var itemHeight = 50;
             var legendBoxLeftPadding = 10;
