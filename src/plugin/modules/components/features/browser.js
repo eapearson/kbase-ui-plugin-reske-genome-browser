@@ -79,7 +79,7 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_id'
+                            text: 'kbase_term_id'
                         }
                     }),
 
