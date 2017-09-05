@@ -27,7 +27,6 @@ define([
         var label = arg.label;
         var fontSize = arg.fontSize;
 
-
         var x2 = x + length * Math.cos(angle * 2 * Math.PI);
         var y2 = y + length * Math.sin(angle * 2 * Math.PI);
         var xLabel = x + (length + fontSize) * Math.cos(angle * 2 * Math.PI);

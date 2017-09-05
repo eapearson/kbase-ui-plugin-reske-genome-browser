@@ -46,7 +46,7 @@ define([
                     style: {
                         width: '40%'
                     }
-                }, 'Term id'),
+                }, 'Id'),
                 td({
                     dataBind: {
                         text: 'term_id'
@@ -58,7 +58,7 @@ define([
                     style: {
                         width: '40%'
                     }
-                }, 'Term name'),
+                }, 'Name'),
                 td({
                     dataBind: {
                         text: 'term_name'
@@ -70,7 +70,7 @@ define([
                     style: {
                         width: '40%'
                     }
-                }, 'Term position'),
+                }, 'Position'),
                 td({
                     dataBind: {
                         text: 'term_position'
