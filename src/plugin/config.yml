@@ -16,7 +16,11 @@ install:
     -
       id: kb_reskeGenomeBrowser_geneTermTester
       module: geneTermComparisonTester
-      type: factory       
+      type: factory
+    -
+      id: kb_reskeGenomeBrowser_segmentTester
+      module: segmentTester
+      type: factory
   ko-components:
     # -
     #   name: reske/gene-term/genomes-browser
@@ -74,7 +78,13 @@ install:
         - reske
         - gene-term-tester
       widget: kb_reskeGenomeBrowser_geneTermTester
-      authorization: true      
+      authorization: true
+    -
+      path:
+        - reske
+        - segment
+      widget: kb_reskeGenomeBrowser_segmentTester
+      authorization: true
   menus:
     -
       name: reske-genome-browser

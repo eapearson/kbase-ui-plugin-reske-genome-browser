@@ -561,6 +561,7 @@ define([
         }
 
         function start(params) {
+            runtime.send('ui', 'setTitle', 'RESKE Gene Function Comparison Tool');
             vm = viewModel();
             render();
         }
