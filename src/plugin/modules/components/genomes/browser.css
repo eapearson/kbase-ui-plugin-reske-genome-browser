@@ -1,0 +1,32 @@
+.component-reske-gene-prediction-genome-browser .-genome-browser {}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(1) {
+    width: 5%
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(2) {
+    width: 10%
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(3) {
+    width: 35%
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(4) {
+    width: 35%
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(5) {
+    width: 10%;
+    padding-right: 20px;
+    text-align: right;
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser td:nth-child(5) {
+    padding-right: 20px;
+    text-align: right;
+}
+
+.component-reske-gene-prediction-genome-browser .-genome-browser th:nth-child(6) {
+    width: 5%
+}

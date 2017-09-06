@@ -27,7 +27,7 @@ define([
 
     function template() {
         return table({
-            class: 'table table-striped',
+            class: 'table table-striped -genome-browser',
         }, [
             thead([
                 tr([

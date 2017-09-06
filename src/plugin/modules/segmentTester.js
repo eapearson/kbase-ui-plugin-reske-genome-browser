@@ -1,6 +1,6 @@
 define([
     'numeral',
-    'knockout',
+    'knockout-plus',
     'kb_common/html'
 ], function(
     numeral,
@@ -16,6 +16,7 @@ define([
         line = t('line'),
         text = t('text'),
         path = t('path');
+
 
     /*
     A sector is two radius vectors connected by an arc.
@@ -144,7 +145,9 @@ define([
         }
         return {
             viewModel: viewModel,
-            template: template()
+            template: {
+                svg: template()
+            }
         };
     }
     ko.components.register('reske/svg/circle', Circle());
@@ -214,10 +217,10 @@ define([
                     }, config)
                 },
                 center: {
-                    x: config.x + 50,
-                    y: config.y + 50,
+                    x: config.x,
+                    y: config.y,
                     radius: 6,
-                    color: 'green'
+                    color: 'black'
                 }
             };
 
@@ -233,24 +236,14 @@ define([
                 vm.sectors.map(function(sector) { return buildSector(sector); }),
                 buildRadial(vm.radials.kbase, vm.config),
                 buildRadial(vm.radials.community, vm.config),
-                svg({
-                    dataBind: {
-                        component: {
-                            name: '"reske/svg/circle"',
-                            params: {
-                                x: 'center.x',
-                                y: 'center.y',
-                                radius: 'center.radius',
-                                color: 'center.color'
-                            }
-                        }
+                komponent({
+                    name: 'reske/svg/circle',
+                    params: {
+                        x: 'center.x',
+                        y: 'center.y',
+                        radius: 'center.radius',
+                        color: 'center.color'
                     }
-                }),
-                circle({
-                    cx: 100,
-                    cy: 100,
-                    r: 10,
-                    fill: 'red'
                 })
             ]);
 
@@ -270,12 +263,12 @@ define([
             ]);
             ko.applyBindings(vm, container);
 
-            var c1 = document.getElementById('mysvg').appendChild(
-                document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
-            c1.setAttribute('cx', 180);
-            c1.setAttribute('cy', 180);
-            c1.setAttribute('r', 10);
-            c1.setAttribute('fill', 'blue');
+            // var c1 = document.getElementById('mysvg').appendChild(
+            //     document.createElementNS('http://www.w3.org/2000/svg', 'circle'));
+            // c1.setAttribute('cx', 180);
+            // c1.setAttribute('cy', 180);
+            // c1.setAttribute('r', 10);
+            // c1.setAttribute('fill', 'blue');
         }
 
         function attach(node) {

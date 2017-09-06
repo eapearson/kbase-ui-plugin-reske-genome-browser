@@ -24,9 +24,15 @@ define([
 
         // SEARCH INPUTS
         var selectedGenome = params.selectedGenome;
-        var searchInput = ko.observable();
+        var searchInput = ko.observable().extend({
+            throttle: 200,
+            notifyWhenChangesStop: true
+        });
         var page = ko.observable(0);
         var pageSize = ko.observable(10);
+        var withPrivate = ko.observable(true);
+        var withPublic = ko.observable(false);
+
 
         // SEARCH OUTPUTS
         var features = ko.observableArray();
@@ -66,6 +72,26 @@ define([
                         });
                 })
                 .then(function(features) {
+
+                    // Fake filtering.
+                    var filter = searchInput();
+                    if (filter) {
+                        isSearching(true);
+                        // any substring.
+                        var filterRe = new RegExp('.*' + filter + '.*', 'i');
+                        features = features.filter(function(feature) {
+                            return (filterRe.exec(feature.name) ||
+                                filterRe.exec(feature.community_term_name) ||
+                                filterRe.exec(feature.kbase_term_name) |
+                                filterRe.exec(feature.community_term_id) ||
+                                filterRe.exec(feature.kbase_term_id)
+                            );
+                        });
+                        totalCount(features.length);
+                        isSearching(false);
+                    }
+
+                    // Fake paging.
                     var start = page() * parseInt(pageSize());
                     var end = Math.min(start + parseInt(pageSize()), totalCount());
                     return features.slice(start, end);
@@ -78,7 +104,6 @@ define([
             fetchFeatures()
                 .then(function(foundFeatures) {
                     features.removeAll();
-
                     foundFeatures.forEach(function(feature) {
                         feature.formatted = {
                             distance: numeral(feature.distance).format('0.00'),
@@ -86,6 +111,7 @@ define([
                         features.push(feature);
                     });
                     fetchingFeatures(false);
+                    isSearching(false);
                 });
         }
 
@@ -110,6 +136,15 @@ define([
         pageSize.subscribe(function(newValue) {
             updateFeatures();
         });
+        withPublic.subscribe(function(newValue) {
+            updateFeatures();
+        });
+        withPrivate.subscribe(function(newValue) {
+            updateFeatures();
+        });
+        searchInput.subscribe(function(newValue) {
+            updateFeatures();
+        });
 
         return {
             // search inputs
@@ -131,20 +166,22 @@ define([
     }
 
     function template() {
-        return div({}, [
-            // div([
-            //     div({
-            //         dataBind: {
-            //             component: {
-            //                 name: '"reske/genome-browser/search/controls"',
-            //                 params: {
-            //                     searchVM: 'searchVM',
-            //                     searchResultsTemplate: 'searchResultsTemplate'
-            //                 }
-            //             }
-            //         }
-            //     })
-            // ]),
+        return div({
+            class: 'component-reske-gene-prediction-features-browser'
+        }, [
+            div([
+                div({
+                    dataBind: {
+                        component: {
+                            name: '"reske/genome-browser/features/controls"',
+                            params: {
+                                searchVM: 'searchVM',
+                                searchResultsTemplate: 'searchResultsTemplate'
+                            }
+                        }
+                    }
+                })
+            ]),
             div([
                 div({
                     dataBind: {

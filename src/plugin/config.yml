@@ -57,7 +57,11 @@ install:
     -
       name: reske/genome-browser/genomes/browser
       module: components/genomes/browser
-      css: false
+      css: true
+    -
+      name: reske/genome-browser/genomes/controls
+      module: components/genomes/controls
+      css: false      
     -
       name: reske/genome-browser/features/ui
       module: components/features/ui
@@ -65,7 +69,11 @@ install:
     -
       name: reske/genome-browser/features/browser
       module: components/features/browser
-      css: false      
+      css: true
+    -
+      name: reske/genome-browser/features/controls
+      module: components/features/controls
+      css: false       
   routes:
     -
       path: 

@@ -81,7 +81,7 @@ define([
                         textInput: 'search.searchInput',
                         hasFocus: true
                     },
-                    placeholder: 'Search KBase Data with RESKE Search!',
+                    placeholder: 'Enter one or more search terms...',
                     class: 'form-control'
                 }),
                 div({
@@ -125,20 +125,6 @@ define([
         return div({
             class: 'container-fluid component-type-search'
         }, [
-            div({
-                class: 'row'
-            }, [
-                div({
-                    class: 'col-md-8 col-md-offset-2'
-                }, [
-                    h2({
-                        style: {
-                            textAlign: 'center'
-                        }
-                    }, 'RESKE Data Search')
-                ])
-            ]),
-
             div({
                 class: 'row'
             }, [

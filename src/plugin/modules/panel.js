@@ -485,8 +485,8 @@ define([
                     div({
                         class: 'col-sm-9'
                     }, [
-                        h3('List Features'),
-                        p('Select a feature'),
+                        h3('Genes'),
+                        p('Select a gene'),
                         div({
                             dataBind: {
                                 component: {

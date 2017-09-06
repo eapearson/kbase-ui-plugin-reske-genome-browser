@@ -81,7 +81,7 @@ define([
                         textInput: 'search.searchInput',
                         hasFocus: true
                     },
-                    placeholder: 'Search KBase Data with RESKE Search!',
+                    placeholder: 'Search for a gene by name, term name, or term id',
                     class: 'form-control'
                 }),
                 div({
@@ -131,32 +131,19 @@ define([
                 div({
                     class: 'col-md-8 col-md-offset-2'
                 }, [
-                    h2({
-                        style: {
-                            textAlign: 'center'
-                        }
-                    }, 'RESKE Data Search')
-                ])
-            ]),
-
-            div({
-                class: 'row'
-            }, [
-                div({
-                    class: 'col-md-8 col-md-offset-2'
-                }, [
                     buildSearchInput()
                 ])
-            ]),
-            div({
-                class: 'row'
-            }, [
-                div({
-                    class: 'col-md-8 col-md-offset-2'
-                }, [
-                    buildSearchFilters()
-                ])
             ])
+            // ,
+            // div({
+            //     class: 'row'
+            // }, [
+            //     div({
+            //         class: 'col-md-8 col-md-offset-2'
+            //     }, [
+            //         buildSearchFilters()
+            //     ])
+            // ])
         ]);
     }
 

@@ -21,9 +21,14 @@ define([
         var runtime = params.runtime;
 
         // SEARCH INPUTS
-        var searchInput = ko.observable();
+        var searchInput = ko.observable().extend({
+            throttle: 200,
+            notifyWhenChangesStop: true
+        });
         var page = ko.observable(0);
         var pageSize = ko.observable(10);
+        var withPrivate = ko.observable(true);
+        var withPublic = ko.observable(false);
 
         // SEARCH OUTPUTS
         var genomes = ko.observableArray();
@@ -48,7 +53,9 @@ define([
 
             var filter = {
                 object_type: 'genome',
-                match_filter: {},
+                match_filter: {
+                    full_text_in_all: searchInput() || null
+                },
                 pagination: {
                     start: startItem,
                     count: pageSize
@@ -60,10 +67,8 @@ define([
                     skip_data: 0
                 },
                 access_filter: {
-                    // with_private: searchPrivateData() ? 1 : 0,
-                    // with_public: searchPublicData() ? 1 : 0
-                    with_private: 1,
-                    with_public: 1,
+                    with_private: withPrivate() ? 1 : 0,
+                    with_public: withPublic() ? 1 : 0
                 },
                 // sorting_rules: sortingRules()
             };
@@ -149,6 +154,16 @@ define([
         pageSize.subscribe(function(newValue) {
             updateGenomes();
         });
+        withPublic.subscribe(function(newValue) {
+            updateGenomes();
+        });
+        withPrivate.subscribe(function(newValue) {
+            updateGenomes();
+        });
+        searchInput.subscribe(function(newValue) {
+            updateGenomes();
+        });
+
 
         return {
             // search inputs
@@ -158,6 +173,8 @@ define([
                 page: page,
                 pageSize: pageSize,
                 totalCount: totalCount,
+                withPrivate: withPrivate,
+                withPublic: withPublic,
                 // this needs to match the results template
                 genomes: genomes,
                 // For ui feedback
@@ -170,20 +187,22 @@ define([
     }
 
     function template() {
-        return div({}, [
-            // div([
-            //     div({
-            //         dataBind: {
-            //             component: {
-            //                 name: '"reske/genome-browser/search/controls"',
-            //                 params: {
-            //                     searchVM: 'searchVM',
-            //                     searchResultsTemplate: 'searchResultsTemplate'
-            //                 }
-            //             }
-            //         }
-            //     })
-            // ]),
+        return div({
+            class: 'component-reske-gene-prediction-genome-browser'
+        }, [
+            div([
+                div({
+                    dataBind: {
+                        component: {
+                            name: '"reske/genome-browser/genomes/controls"',
+                            params: {
+                                searchVM: 'searchVM',
+                                searchResultsTemplate: 'searchResultsTemplate'
+                            }
+                        }
+                    }
+                })
+            ]),
             div([
                 div({
                     dataBind: {
