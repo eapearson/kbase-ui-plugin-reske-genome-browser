@@ -59,6 +59,10 @@ install:
       module: components/genomes/browser
       css: true
     -
+      name: reske/genome-browser/genomes/table
+      module: components/genomes/table
+      css: true
+    -
       name: reske/genome-browser/genomes/controls
       module: components/genomes/controls
       css: false      
@@ -99,4 +103,4 @@ install:
       definition:
         path: reske/genome-browser
         icon: circle-o
-        label: Reske Genome Playground
+        label: RESKE Gene Prediction Comparison Tool

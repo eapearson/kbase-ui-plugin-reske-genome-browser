@@ -41,7 +41,7 @@ define([
             ]),
             tbody({
                 dataBind: {
-                    foreach: 'vm.genomes'
+                    foreach: 'vm.searchResults'
                 }
             }, [
                 tr([
@@ -52,23 +52,24 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'data.domain'
+                            text: 'domain'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'data.scientific_name'
+                            text: 'scientificName'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'data.id'
+                            text: 'id'
                         }
                     }),
 
                     td({
                         dataBind: {
-                            text: 'data.features'
+                            numberText: 'features',
+                            numberFormat: '"0,0"'
                         }
                     }),
                     td({

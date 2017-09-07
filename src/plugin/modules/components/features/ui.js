@@ -105,9 +105,6 @@ define([
                 .then(function(foundFeatures) {
                     features.removeAll();
                     foundFeatures.forEach(function(feature) {
-                        feature.formatted = {
-                            distance: numeral(feature.distance).format('0.00'),
-                        };
                         features.push(feature);
                     });
                     fetchingFeatures(false);

@@ -129,9 +129,6 @@ define([
                         features.removeAll();
 
                         foundFeatures.forEach(function(feature) {
-                            feature.formatted = {
-                                distance: numeral(feature.distance).format('0.00'),
-                            };
                             features.push(feature);
                         });
                         fetchingFeatures(false);
@@ -281,6 +278,8 @@ define([
                     div({
                         class: 'col-sm-3',
                     }, [
+                        h3('Selections'),
+                        p('As you select first a genome and then a gene, the current selections will be displayed below.'),
                         div({
                             class: 'well',
                         }, [
@@ -305,14 +304,14 @@ define([
                                 div([
                                     span({
                                         dataBind: {
-                                            text: 'data.domain'
+                                            text: 'domain'
                                         }
                                     })
                                 ]),
                                 div([
                                     span({
                                         dataBind: {
-                                            text: 'data.scientific_name'
+                                            text: 'scientificName'
                                         },
                                         style: {
                                             fontStyle: 'italic'
@@ -329,7 +328,7 @@ define([
                                         th('ID'),
                                         td({
                                             dataBind: {
-                                                text: 'data.id'
+                                                text: 'id'
                                             }
                                         })
                                     ]),
@@ -337,7 +336,7 @@ define([
                                         th('# Features'),
                                         td({
                                             dataBind: {
-                                                text: 'data.features'
+                                                text: 'features'
                                             }
                                         })
                                     ])
@@ -398,7 +397,8 @@ define([
                                         th('Distance'),
                                         td({
                                             dataBind: {
-                                                text: 'formatted.distance'
+                                                numberText: 'distance',
+                                                numberFormat: '"0.00"'
                                             }
                                         })
                                     ]),

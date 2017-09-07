@@ -59,7 +59,8 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'formatted.distance'
+                            numberText: 'distance',
+                            numberFormat: '"0.00"'
                         }
                     }),
                     td({

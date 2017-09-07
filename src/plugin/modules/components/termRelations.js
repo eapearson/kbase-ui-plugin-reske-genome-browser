@@ -73,7 +73,8 @@ define([
                 }, 'Position'),
                 td({
                     dataBind: {
-                        text: 'term_position'
+                        numberText: 'term_position',
+                        numberFormat: '"0.00"'
                     }
                 })
             ]),
