@@ -126,40 +126,59 @@ define([
                 sectorCount: ko.observable(5)
             };
 
-            var sectors = ko.observableArray();
-
-            function updateSectors() {
-                var sectorCount = config.sectorCount();
-                var sectorSize = 1 / sectorCount;
-                for (var i = 0; i < sectorCount; i += 1) {
-                    // var sectors = ['red', 'green', 'blue', 'orange', 'silver'].map(function(color, index) {
-                    var label = String(i);
-                    sectors.push({
-                        sector: {
-                            x: config.x,
-                            y: config.y,
-                            radius: config.radius,
-                            // color: color,
-                            // the start of the sector - the location in the circle to start it
-                            // 0 -> 1
-                            start: i * sectorSize,
-                            // the central angle of the sector
-                            // 0 -> 1
-                            theta: sectorSize,
-                            label: label
-                        }
-                    });
+            var data = {
+                reference: {
+                    goterm: {
+                        id: 'GO:0005447',
+                        name: 'eukaryotic elongation factor-2 kinase activator activity',
+                    }
+                },
+                kbase: {
+                    goterm: {
+                        id: 'GO:0003858',
+                        name: 'toxin activity',
+                        distance: 0.3676767707829466
+                    },
+                    types: {
+                        // now each go term type can have multiple go term assignments with a p-value
+                        fitness: [{
+                            id: 'GO:0001731',
+                            name: '11-deoxycortisol binding',
+                            distance: 0.33,
+                            pValue: 0.01
+                        }, {
+                            id: 'GO:0001732',
+                            name: 'abc',
+                            distance: 0.33,
+                            pValue: 0.02
+                        }, {
+                            id: 'GO:0001733',
+                            name: 'def',
+                            distance: 0.33,
+                            pValue: 0.06
+                        }],
+                        expression: [{
+                            id: 'GO:0004316',
+                            name: 'ADP binding',
+                            distance: 0.6,
+                            pValue: 0.03
+                        }, {
+                            id: 'GO:0004316',
+                            name: 'xyz',
+                            distance: 0.6,
+                            pValue: 0.04
+                        }, {
+                            id: 'GO:0004316',
+                            name: 'uvw',
+                            distance: 0.6,
+                            pValue: 0.03
+                        }]
+                    }
                 }
-            }
-            updateSectors();
-
-            config.sectorCount.subscribe(function(newValue) {
-                updateSectors();
-            });
+            };
 
             return {
                 config: config,
-                sectors: sectors,
                 radials: {
                     kbase: {
                         radial: {
@@ -170,7 +189,7 @@ define([
                             width: 4,
                             fontFamily: config.fontFamily,
                             fontSize: config.fontSize,
-                            label: 'Radial One',
+                            label: 'You (KBase)',
                             color: 'orange'
                         }
                     },
@@ -178,16 +197,79 @@ define([
                         radial: {
                             x: config.x,
                             y: config.y,
-                            angle: 0.37,
+                            angle: 0,
                             length: config.radialLength,
                             width: 4,
                             fontFamily: config.fontFamily,
                             fontSize: config.fontSize,
-                            label: 'Radial Two',
-                            color: 'blue'
+                            label: 'Ref',
+                            color: 'black'
                         }
                     }
                 },
+                rings: [
+                    // {
+                    //     ring: {
+                    //         x: config.x,
+                    //         y: config.y,
+                    //         radius: 90,
+                    //         width: 10,
+                    //         color: 'green'
+                    //     }
+                    // },
+                    {
+                        ring: {
+                            x: config.x,
+                            y: config.y,
+                            radius: 40,
+                            width: 10,
+                            color: 'blue'
+                        }
+                    },
+                    {
+                        ring: {
+                            x: config.x,
+                            y: config.y,
+                            radius: 70,
+                            width: 10,
+                            color: 'orange'
+                        }
+                    }
+                ],
+                ticks: [{
+                        tick: {
+                            x: config.x,
+                            y: config.y,
+                            start: 0.3,
+                            theta: 0.05,
+                            radius: 40,
+                            width: 10,
+                            color: 'red'
+                        }
+                    },
+                    {
+                        tick: {
+                            x: config.x,
+                            y: config.y,
+                            start: 0.5,
+                            theta: 0.3,
+                            radius: 40,
+                            width: 10,
+                            color: 'red'
+                        }
+                    },
+                    {
+                        tick: {
+                            x: config.x,
+                            y: config.y,
+                            start: 0.6,
+                            theta: 0.05,
+                            radius: 70,
+                            width: 10,
+                            color: 'silver'
+                        }
+                    },
+                ],
                 center: {
                     x: config.x,
                     y: config.y,
@@ -210,12 +292,19 @@ define([
                     margin: '10px'
                 }
             }, [
-                '<!-- ko foreach: sectors -->',
-                // vm.sectors.map(function(sector) { return buildSector(sector); }),
+                '<!-- ko foreach: rings -->',
                 komponent({
-                    name: 'reske/widget/sector',
+                    name: 'reske/widget/ring',
                     params: {
-                        sector: 'sector'
+                        ring: 'ring'
+                    }
+                }),
+                '<!-- /ko -->',
+                '<!-- ko foreach: ticks -->',
+                komponent({
+                    name: 'reske/widget/ringTick',
+                    params: {
+                        tick: 'tick'
                     }
                 }),
                 '<!-- /ko -->',

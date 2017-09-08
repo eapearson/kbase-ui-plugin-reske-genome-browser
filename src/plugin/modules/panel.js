@@ -143,6 +143,16 @@ define([
                 fetchingTermRelations(true);
                 fetchTermRelations()
                     .then(function(fetchedTermRelations) {
+                        console.log('term relations', fetchedTermRelations);
+
+                        var community = fetchedTermRelations.filter(function(relation) {
+                            return (relation.relation_type === 'community');
+                        })[0].term_position;
+
+                        fetchedTermRelations.forEach(function(relation) {
+                            relation.term_position -= community;
+                        });
+
                         termRelations(fetchedTermRelations);
                     });
             }

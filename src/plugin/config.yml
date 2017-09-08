@@ -21,6 +21,14 @@ install:
       id: kb_reskeGenomeBrowser_segmentTester
       module: segmentTester
       type: factory
+    -
+      id: kb_reskeGenomeBrowser_dialTester
+      module: dialTester
+      type: factory
+    -
+      id: kb_reskeGenomeBrowser_clockTester
+      module: clockTester
+      type: factory
   ko-components:
     # -
     #   name: reske/gene-term/genomes-browser
@@ -78,6 +86,31 @@ install:
       name: reske/genome-browser/features/controls
       module: components/features/controls
       css: false       
+    # widgets
+    -
+      name: reske/widget/dial
+      module: components/widgets/dial
+      css: false
+    -
+      name: reske/widget/sector
+      module: components/widgets/sector
+      css: false
+    -
+      name: reske/widget/radial
+      module: components/widgets/radial
+      css: false
+    -
+      name: reske/widget/circle
+      module: components/widgets/circle
+      css: false
+    -
+      name: reske/widget/ring
+      module: components/widgets/ring
+      css: false
+    -
+      name: reske/widget/ringTick
+      module: components/widgets/ringTick
+      css: false
   routes:
     -
       path: 
@@ -94,8 +127,23 @@ install:
     -
       path:
         - reske
+        - test
         - segment
       widget: kb_reskeGenomeBrowser_segmentTester
+      authorization: true
+    -
+      path:
+        - reske
+        - test
+        - dial
+      widget: kb_reskeGenomeBrowser_dialTester
+      authorization: true
+    -
+      path:
+        - reske
+        - test
+        - clock
+      widget: kb_reskeGenomeBrowser_clockTester
       authorization: true
   menus:
     -

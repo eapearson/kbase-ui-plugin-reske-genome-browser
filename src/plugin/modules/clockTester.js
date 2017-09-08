@@ -19,6 +19,8 @@ define([
         input = t('input'),
         label = t('label');
 
+    var vm; // top level view model
+
     // COMPONENTS
 
     function komponent(componentDef) {
@@ -126,51 +128,20 @@ define([
                 sectorCount: ko.observable(5)
             };
 
-            var sectors = ko.observableArray();
-
-            function updateSectors() {
-                var sectorCount = config.sectorCount();
-                var sectorSize = 1 / sectorCount;
-                for (var i = 0; i < sectorCount; i += 1) {
-                    // var sectors = ['red', 'green', 'blue', 'orange', 'silver'].map(function(color, index) {
-                    var label = String(i);
-                    sectors.push({
-                        sector: {
-                            x: config.x,
-                            y: config.y,
-                            radius: config.radius,
-                            // color: color,
-                            // the start of the sector - the location in the circle to start it
-                            // 0 -> 1
-                            start: i * sectorSize,
-                            // the central angle of the sector
-                            // 0 -> 1
-                            theta: sectorSize,
-                            label: label
-                        }
-                    });
-                }
-            }
-            updateSectors();
-
-            config.sectorCount.subscribe(function(newValue) {
-                updateSectors();
-            });
 
             return {
                 config: config,
-                sectors: sectors,
                 radials: {
                     kbase: {
                         radial: {
                             x: config.x,
                             y: config.y,
-                            angle: 0.23,
+                            angle: ko.observable(0),
                             length: config.radialLength,
                             width: 4,
                             fontFamily: config.fontFamily,
                             fontSize: config.fontSize,
-                            label: 'Radial One',
+                            label: 'You (KBase)',
                             color: 'orange'
                         }
                     },
@@ -178,16 +149,100 @@ define([
                         radial: {
                             x: config.x,
                             y: config.y,
-                            angle: 0.37,
+                            angle: 0,
                             length: config.radialLength,
                             width: 4,
                             fontFamily: config.fontFamily,
                             fontSize: config.fontSize,
-                            label: 'Radial Two',
-                            color: 'blue'
+                            label: 'Ref',
+                            color: 'black'
                         }
                     }
                 },
+                rings: [
+                    // {
+                    //     ring: {
+                    //         x: config.x,
+                    //         y: config.y,
+                    //         radius: 90,
+                    //         width: 10,
+                    //         color: 'green'
+                    //     }
+                    // },
+                    {
+                        ring: {
+                            x: config.x,
+                            y: config.y,
+                            radius: 40,
+                            width: 10,
+                            color: 'blue'
+                        }
+                    },
+                    {
+                        ring: {
+                            x: config.x,
+                            y: config.y,
+                            radius: 70,
+                            width: 10,
+                            color: 'orange'
+                        }
+                    }
+                ],
+                ticks: (function() {
+                    var ticks = [];
+                    var diff = 1 / 12;
+                    var theta = 0.01;
+                    var angle;
+                    for (var i = 0; i < 12; i += 1) {
+                        angle = diff * i - (theta / 2);
+                        ticks.push({
+                            tick: {
+                                x: config.x,
+                                y: config.y,
+                                start: angle,
+                                theta: theta,
+                                radius: 70,
+                                width: 10,
+                                color: 'red'
+                            }
+                        });
+                    }
+                    return ticks;
+                }()),
+                // ticks: [{
+                //         tick: {
+                //             x: config.x,
+                //             y: config.y,
+                //             start: 0.3,
+                //             theta: 0.05,
+                //             radius: 40,
+                //             width: 10,
+                //             color: 'red'
+                //         }
+                //     },
+                //     {
+                //         tick: {
+                //             x: config.x,
+                //             y: config.y,
+                //             start: 0.5,
+                //             theta: 0.3,
+                //             radius: 40,
+                //             width: 10,
+                //             color: 'red'
+                //         }
+                //     },
+                //     {
+                //         tick: {
+                //             x: config.x,
+                //             y: config.y,
+                //             start: 0.6,
+                //             theta: 0.05,
+                //             radius: 70,
+                //             width: 10,
+                //             color: 'silver'
+                //         }
+                //     },
+                // ],
                 center: {
                     x: config.x,
                     y: config.y,
@@ -199,7 +254,7 @@ define([
 
         function render() {
             // Make a big frickin' structure...
-            var vm = viewModel();
+            vm = viewModel();
 
             var w = svg({
                 id: 'mysvg',
@@ -210,12 +265,19 @@ define([
                     margin: '10px'
                 }
             }, [
-                '<!-- ko foreach: sectors -->',
-                // vm.sectors.map(function(sector) { return buildSector(sector); }),
+                '<!-- ko foreach: rings -->',
                 komponent({
-                    name: 'reske/widget/sector',
+                    name: 'reske/widget/ring',
                     params: {
-                        sector: 'sector'
+                        ring: 'ring'
+                    }
+                }),
+                '<!-- /ko -->',
+                '<!-- ko foreach: ticks -->',
+                komponent({
+                    name: 'reske/widget/ringTick',
+                    params: {
+                        tick: 'tick'
                     }
                 }),
                 '<!-- /ko -->',
@@ -265,6 +327,29 @@ define([
             ko.applyBindings(vm, container);
         }
 
+        var timer;
+
+        function startClock() {
+            function tick() {
+                timer = window.setTimeout(function() {
+                    // time as an angle.
+                    // just do seconds for now...
+                    var now = new Date();
+                    var secondsAsAngle = now.getSeconds() / 60;
+                    var millisAsAngle = (now.getSeconds() * 1000 + now.getMilliseconds()) / (60 * 1000);
+                    vm.radials.kbase.radial.angle(secondsAsAngle);
+                    if (timer) {
+                        tick();
+                    }
+                }, 200);
+            }
+            tick();
+        }
+
+        function stopClock() {
+            timer = null;
+        }
+
         function attach(node) {
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
@@ -272,9 +357,12 @@ define([
 
         function start(params) {
             render();
+            startClock();
         }
 
-        function stop() {}
+        function stop() {
+            stopClock();
+        }
 
         function detach() {}
 

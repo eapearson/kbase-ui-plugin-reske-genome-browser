@@ -11,15 +11,7 @@ define([
 
     var t = html.tag,
         div = t('div'),
-        button = t('button'),
-        table = t('table'),
-        thead = t('thead'),
-        tr = t('tr'),
-        th = t('th'),
-        tbody = t('tbody'),
-        td = t('td');
-
-    var svg = t('svg'),
+        svg = t('svg'),
         defs = t('defs'),
         mask = t('mask'),
         circle = t('circle'),
@@ -492,7 +484,9 @@ define([
     function component() {
         return {
             viewModel: viewModel,
-            template: template()
+            template: {
+                svg: template()
+            }
         };
     }
     return component;
