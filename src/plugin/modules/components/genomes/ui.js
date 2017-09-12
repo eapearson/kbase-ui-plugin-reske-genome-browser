@@ -82,11 +82,9 @@ define([
                 sorting_rules: sortingRules()
             };
 
-            console.log('searching with', filter);
 
             return client.callFunc('search_objects', [filter])
                 .spread(function(hits) {
-                    console.log('got', hits);
                     // Here we modify each object result, essentially normalizing 
                     // some properties and adding ui-specific properties.
                     // hits.objects.forEach(function(object, index) {
@@ -120,7 +118,6 @@ define([
         }
 
         function updateGenomes(source) {
-            console.log('updating genoms from', source)
             isSearching(true);
             return fetchGenomes({
                     page: page(),
@@ -128,7 +125,6 @@ define([
                 })
                 .then(function(genomeSearchResult) {
                     totalCount(genomeSearchResult.total);
-                    // console.log('got ', genomeSearchResult);
                     searchResults.removeAll();
                     genomeSearchResult.objects.forEach(function(hitObject, index) {
                         // normalize each result item. We omit anything we dont' need, and 

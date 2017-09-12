@@ -81,10 +81,10 @@ define([
                         var filterRe = new RegExp('.*' + filter + '.*', 'i');
                         features = features.filter(function(feature) {
                             return (filterRe.exec(feature.name) ||
-                                filterRe.exec(feature.community_term_name) ||
+                                filterRe.exec(feature.reference_term_name) ||
                                 filterRe.exec(feature.kbase_term_name) |
-                                filterRe.exec(feature.community_term_id) ||
-                                filterRe.exec(feature.kbase_term_id)
+                                filterRe.exec(feature.reference_term_guid) ||
+                                filterRe.exec(feature.kbase_term_guid)
                             );
                         });
                         totalCount(features.length);

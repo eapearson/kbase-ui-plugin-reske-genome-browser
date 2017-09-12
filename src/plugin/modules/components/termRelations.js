@@ -16,69 +16,238 @@ define([
         td = t('td');
 
     function viewModel(params) {
-        return {
-            vm: params.vm
-        };
+        // sort by pvalue so that the best appear at the top...
+
+        // hmm, should we sort in-situ or copy the data?
+
+
+        return params;
     }
 
+    // function buildTermRelationsx() {
+    //     return div({
+    //         dataBind: {
+    //             foreach: 'vm.termRelations'
+    //         }
+    //     }, table({
+    //         class: 'table table-striped'
+    //     }, [
+    //         tr([
+    //             th({
+    //                 style: {
+    //                     width: '40%'
+    //                 }
+    //             }, 'Relation type'),
+    //             td({
+    //                 dataBind: {
+    //                     text: 'relation_type'
+    //                 }
+    //             })
+    //         ]),
+    //         tr([
+    //             th({
+    //                 style: {
+    //                     width: '40%'
+    //                 }
+    //             }, 'Id'),
+    //             td({
+    //                 dataBind: {
+    //                     text: 'term_id'
+    //                 }
+    //             })
+    //         ]),
+    //         tr([
+    //             th({
+    //                 style: {
+    //                     width: '40%'
+    //                 }
+    //             }, 'Name'),
+    //             td({
+    //                 dataBind: {
+    //                     text: 'term_name'
+    //                 }
+    //             })
+    //         ]),
+    //         tr([
+    //             th({
+    //                 style: {
+    //                     width: '40%'
+    //                 }
+    //             }, 'Position'),
+    //             td({
+    //                 dataBind: {
+    //                     numberText: 'term_position',
+    //                     numberFormat: '"0.00"'
+    //                 }
+    //             })
+    //         ]),
+    //     ]));
+    // }
+
+    function buildTerms(label, type) {
+        return div([
+            div({
+                style: {
+                    fontWeight: 'bold'
+                }
+            }, label),
+            table({
+                class: 'table'
+            }, [
+                tr([
+                    th('Id'),
+                    th('Name'),
+                    th('p-value'),
+                    th('Position')
+                ]),
+                '<!-- ko foreach: vm.termRelations().' + type + '.terms -->',
+                tr({
+                    dataBind: {
+                        style: {
+                            'font-weight': 'best ? "bold" : "normal" '
+                        }
+                    }
+                }, [
+                    td({
+                        dataBind: {
+                            text: 'term_guid'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'pvalue',
+                            numberFormat: '"0.0000"'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'term_position',
+                            numberFormat: '"0.00"'
+                        }
+                    })
+                ]),
+                '<!-- /ko -->'
+            ])
+        ]);
+    }
+
+    function buildReferenceTerms() {
+        return div([
+            div({
+                style: {
+                    fontWeight: 'bold'
+                }
+            }, 'Reference'),
+            table({
+                class: 'table'
+            }, [
+                tr([
+                    th('Id'),
+                    th('Name'),
+                    th('p-value'),
+                    th('Position')
+                ]),
+                '<!-- ko foreach: vm.termRelations().reference.terms -->',
+                tr({
+                    dataBind: {
+                        style: {
+                            'font-weight': 'best ? "bold" : "normal" '
+                        }
+                    }
+                }, [
+                    td({
+                        dataBind: {
+                            text: 'term_guid'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'pvalue',
+                            numberFormat: '"0.0000"'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'term_position',
+                            numberFormat: '"0.00"'
+                        }
+                    })
+                ]),
+                '<!-- /ko -->'
+            ])
+        ]);
+    }
+
+    function buildKBaseTerms() {
+        return div([
+            div({
+                style: {
+                    fontWeight: 'bold'
+                }
+            }, 'KBase'),
+            table({
+                class: 'table'
+            }, [
+                tr([
+                    th('Id'),
+                    th('Name'),
+                    th('p-value'),
+                    th('Position')
+                ]),
+                '<!-- ko foreach: vm.termRelations().kbase.terms -->',
+                tr({
+                    dataBind: {
+                        style: {
+                            'font-weight': 'best ? "bold" : "normal" '
+                        }
+                    }
+                }, [
+                    td({
+                        dataBind: {
+                            text: 'term_guid'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            text: 'term_name'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'pvalue',
+                            numberFormat: '"0.0000"'
+                        }
+                    }),
+                    td({
+                        dataBind: {
+                            numberText: 'term_position',
+                            numberFormat: '"0.00"'
+                        }
+                    })
+                ]),
+                '<!-- /ko -->'
+            ])
+        ]);
+    }
+
+
     function buildTermRelations() {
-        return div({
-            dataBind: {
-                foreach: 'vm.termRelations'
-            }
-        }, table({
-            class: 'table table-striped'
-        }, [
-            tr([
-                th({
-                    style: {
-                        width: '40%'
-                    }
-                }, 'Relation type'),
-                td({
-                    dataBind: {
-                        text: 'relation_type'
-                    }
-                })
-            ]),
-            tr([
-                th({
-                    style: {
-                        width: '40%'
-                    }
-                }, 'Id'),
-                td({
-                    dataBind: {
-                        text: 'term_id'
-                    }
-                })
-            ]),
-            tr([
-                th({
-                    style: {
-                        width: '40%'
-                    }
-                }, 'Name'),
-                td({
-                    dataBind: {
-                        text: 'term_name'
-                    }
-                })
-            ]),
-            tr([
-                th({
-                    style: {
-                        width: '40%'
-                    }
-                }, 'Position'),
-                td({
-                    dataBind: {
-                        numberText: 'term_position',
-                        numberFormat: '"0.00"'
-                    }
-                })
-            ]),
-        ]));
+        return [
+            buildTerms('Reference', 'reference'),
+            buildTerms('KBase', 'kbase'),
+            buildTerms('Fitness', 'fitness'),
+            buildTerms('Expression', 'expression')
+        ];
     }
 
     function buildFeature() {
@@ -95,7 +264,7 @@ define([
                 }, 'Feature ID'),
                 td({
                     dataBind: {
-                        text: 'vm.selectedFeature().feature_id'
+                        text: 'vm.selectedFeature().feature_guid'
                     }
                 })
             ])

@@ -29,7 +29,6 @@ define([
       rowNumber, domain, scientific_name, id, features+
      */
     function viewModel(params) {
-        console.log('params', params);
         // function doOpenNarrative(data) {
         //     var url = params.search.runtime.config('services.narrative.url');
         //     window.open(url + '/narrative/' + data.narrativeId, '_blank');

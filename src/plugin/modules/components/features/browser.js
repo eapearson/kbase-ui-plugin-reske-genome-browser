@@ -65,12 +65,12 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_name'
+                            text: 'reference_term_name'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_id'
+                            text: 'reference_term_guid'
                         }
                     }),
                     td({
@@ -80,7 +80,7 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'kbase_term_id'
+                            text: 'kbase_term_guid'
                         }
                     }),
 

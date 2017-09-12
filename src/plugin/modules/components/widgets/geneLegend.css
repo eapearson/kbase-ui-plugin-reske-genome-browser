@@ -1,0 +1,21 @@
+.component-reske-gene-legend table {}
+
+.component-reske-gene-legend table tr td:nth-child(1) {
+    width: 5%
+}
+
+.component-reske-gene-legend table tr td:nth-child(2) {
+    width: 40%
+}
+
+.component-reske-gene-legend table tr td:nth-child(3) {
+    width: 35%
+}
+
+.component-reske-gene-legend table tr td:nth-child(4) {
+    width: 10%
+}
+
+.component-reske-gene-legend table tr td:nth-child(5) {
+    width: 10%
+}

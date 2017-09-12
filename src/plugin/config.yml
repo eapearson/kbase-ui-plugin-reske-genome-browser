@@ -111,6 +111,14 @@ install:
       name: reske/widget/ringTick
       module: components/widgets/ringTick
       css: false
+    -
+      name: reske/gene/dial
+      module: components/widgets/geneDial
+      css: false
+    -
+      name: reske/gene/legend
+      module: components/widgets/geneLegend
+      css: true
   routes:
     -
       path: 

@@ -158,7 +158,7 @@ define([
 
             function fetchTermRelations() {
                 return dsClient.callFunc('getTermRelations', [{
-                        feature_id: selectedFeature().feature_id
+                        feature_guid: selectedFeature().feature_guid
                     }])
                     .spread(function(result) {
                         return result;

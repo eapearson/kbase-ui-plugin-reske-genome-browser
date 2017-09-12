@@ -29,6 +29,44 @@ define([
         th = t('th'),
         td = t('td');
 
+    function calcScale(value, scaleMin, scaleMax) {
+        // min and max are -ish
+        function log(v) {
+            return Math.log(v) / Math.log(4);
+        }
+        var max = Math.abs(log(scaleMin));
+        var min = Math.abs(log(scaleMax));
+        var range = Math.abs(max - min);
+        var val = Math.abs(log(value));
+        console.log('scale', min, max, val, range);
+        if (val > max) {
+            return 1;
+        }
+        if (val < min) {
+            return 0;
+        }
+        // var scaled = Math.abs(val / max);
+        var scaled = (val - min) / range;
+        console.log('scaled', scaled);
+        return scaled;
+    }
+
+    function calcScale(value) {
+        if (value <= 0.0001) {
+            return 1;
+        }
+        if (value <= 0.001) {
+            return 0.8;
+        }
+        if (value <= 0.01) {
+            return 0.6;
+        }
+        if (value <= 0.05) {
+            return 0.4;
+        }
+        return 0.2;
+    }
+
     function factory(config) {
         var runtime = config.runtime,
             hostNode, container;
@@ -40,6 +78,49 @@ define([
             token: runtime.service('session').getAuthToken(),
             module: 'GeneOntologyDecorator'
         });
+
+        var widgetConfig = {
+            x: 150,
+            y: 150,
+            fontFamily: 'sans serif',
+            fontSize: 11,
+            radius: 80,
+            minRadius: 50,
+            radialLength: 100,
+            ringWidth: 10,
+            sectorCount: ko.observable(5),
+            tickTheta: 0.05,
+            tickLength: 6, // in pixels
+            ringLayout: ['reference', 'kbase', 'fitness', 'expression'],
+            leftMargin: 10,
+            goConfig: {
+                reference: {
+                    label: 'Ref',
+                    // black
+                    color: [0, 0, 0],
+                },
+                kbase: {
+                    label: 'Kbase',
+                    // orange
+                    color: [249, 124, 0]
+                },
+                fitness: {
+                    label: 'Fitness',
+                    // green
+                    color: [33, 140, 56]
+                },
+                expression: {
+                    label: 'Expression',
+                    // purple
+                    color: [130, 61, 142]
+                }
+            },
+            // legend: {
+            //     leftMargin: 10,
+            //     top: 300,
+            //     swatchSize: 10
+            // }
+        };
 
         // var workspaceClient = new GenericClient({
         //     url: runtime.config('services.workspace.url'),
@@ -89,7 +170,7 @@ define([
 
             function fetchTermRelations() {
                 return dsClient.callFunc('getTermRelations', [{
-                        feature_id: selectedFeature().feature_id
+                        feature_guid: selectedFeature().feature_guid
                     }])
                     .spread(function(result) {
                         return result;
@@ -139,24 +220,46 @@ define([
             var termRelations = ko.observable();
             var fetchingTermRelations = ko.observable(false);
 
+            function makeColor(rgbColor, alpha) {
+                return 'rgba(' + rgbColor.join(',') + ',' + alpha + ')';
+            }
+
             function updateTermRelations() {
                 fetchingTermRelations(true);
                 fetchTermRelations()
                     .then(function(fetchedTermRelations) {
-                        console.log('term relations', fetchedTermRelations);
 
-                        var community = fetchedTermRelations.filter(function(relation) {
-                            return (relation.relation_type === 'community');
-                        })[0].term_position;
+                        // var community = fetchedTermRelations.filter(function(relation) {
+                        //     return (relation.relation_type === 'community');
+                        // })[0].term_position;
 
-                        fetchedTermRelations.forEach(function(relation) {
-                            relation.term_position -= community;
+                        // fetchedTermRelations.forEach(function(relation) {
+                        //     relation.term_position -= community;
+                        // });
+
+                        Object.keys(fetchedTermRelations).forEach(function(typeName) {
+                            var relationType = fetchedTermRelations[typeName];
+                            var typeConfig = widgetConfig.goConfig[typeName];
+                            relationType.terms.forEach(function(term) {
+                                term.best = (term.term_guid === relationType.best_term.term_guid);
+                                // var alpha = 1 - Math.pow(term.pvalue, 1 / 5);
+                                //var log = Math.abs(Math.log(term.pvalue) / Math.log(4));
+                                // var alpha = Math.min(log, 10) / 10;
+                                var alpha = calcScale(term.pvalue, 0.00001, 0.1);
+                                term.color = makeColor(typeConfig.color, alpha);
+                            });
+                            relationType.terms.sort(function(a, b) {
+                                return a.pvalue - b.pvalue;
+                            });
                         });
 
                         termRelations(fetchedTermRelations);
                     });
             }
 
+            function clearTermRelations() {
+                termRelations(null);
+            }
 
             // Subscriptions
 
@@ -169,6 +272,8 @@ define([
             selectedFeature.subscribe(function(newFeature) {
                 if (newFeature) {
                     updateTermRelations();
+                } else {
+                    clearTermRelations();
                 }
             });
 
@@ -391,7 +496,7 @@ define([
                                         th('Id'),
                                         td({
                                             dataBind: {
-                                                text: 'feature_id'
+                                                text: 'feature_guid'
                                             }
                                         })
                                     ]),
@@ -417,12 +522,12 @@ define([
                                         td([
                                             div({
                                                 dataBind: {
-                                                    text: 'community_term_name'
+                                                    text: 'reference_term_name'
                                                 }
                                             }),
                                             div({
                                                 dataBind: {
-                                                    text: 'community_term_id'
+                                                    text: 'reference_term_guid'
                                                 },
                                                 style: {
                                                     fontStyle: 'italic'
@@ -440,7 +545,7 @@ define([
                                             }),
                                             div({
                                                 dataBind: {
-                                                    text: 'kbase_term_id'
+                                                    text: 'kbase_term_guid'
                                                 },
                                                 style: {
                                                     fontStyle: 'italic'
@@ -512,38 +617,12 @@ define([
                         })
                     ]),
                     '<!-- /ko -->',
-                    '<!-- ko if: vm.selectedGenome() && vm.selectedFeature()-->',
+                    '<!-- ko if: vm.selectedGenome() && vm.selectedFeature() && vm.termRelations()-->',
                     div({
-                        class: 'col-sm-4',
-                        dataBind: {
-                            style: {
-                                width: 'vm.layout.relations.collapsed() ? "50px" : null ',
-                                'overflow-x': 'vm.layout.relations.collapsed() ? "hidden" : null'
-                            }
-                        }
-                    }, [
-                        h3('Term Relations'),
-                        div({
-                            dataBind: {
-                                component: {
-                                    name: '"reske/gene-term/term-relations-viewer"',
-                                    params: {
-                                        vm: 'vm'
-                                    }
-                                }
-                            }
-                        })
-                    ]), div({
-                        class: 'col-sm-5',
-                        dataBind: {
-                            style: {
-                                width: 'vm.layout.relations.collapsed() ? "50px" : null ',
-                                'overflow-x': 'vm.layout.relations.collapsed() ? "hidden" : null'
-                            }
-                        }
+                        class: 'col-sm-9',
+
                     }, [
                         h3('Widget'),
-                        '<!-- ko if: vm.termRelations() && vm.termRelations().length > 0 -->',
                         div({
                             dataBind: {
                                 component: {
@@ -553,11 +632,7 @@ define([
                                     }
                                 }
                             }
-                        }),
-                        '<!-- /ko -->',
-                        '<!-- ko if: !(vm.termRelations() && vm.termRelations().length > 0) -->',
-                        'choose a term to show the viewer',
-                        '<!-- /ko -->'
+                        })
                     ]),
                     '<!-- /ko -->'
                 ])

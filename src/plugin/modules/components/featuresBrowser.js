@@ -33,7 +33,7 @@ define([
                 tr([
                     th('Name'),
                     th('Distance'),
-                    th('Community'),
+                    th('Reference'),
                     th(),
                     th('KBase'),
                     th(),
@@ -53,17 +53,18 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'formatted.distance'
+                            numberText: 'distance',
+                            numberFormat: '0,0'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_name'
+                            text: 'reference_term_name'
                         }
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_id'
+                            text: 'reference_term_guid'
                         }
                     }),
                     td({
@@ -73,7 +74,7 @@ define([
                     }),
                     td({
                         dataBind: {
-                            text: 'community_term_id'
+                            text: 'kbase_term_guid'
                         }
                     }),
 
