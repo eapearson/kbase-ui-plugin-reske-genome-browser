@@ -2,7 +2,7 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/html'
-], function(
+], function (
     ko,
     numeral,
     html
@@ -36,9 +36,7 @@ define([
             fontFamily: 'monospace',
             fontSize: 12,
             radius: 80,
-            minRadius: 50,
-            radialLength: 100,
-            radialWidth: 4,
+            minRadius: 30,
             ringWidth: 10,
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
@@ -48,23 +46,35 @@ define([
             goConfig: {
                 reference: {
                     label: 'Ref',
+                    radial: {
+                        length: 70,
+                        width: 5
+                    },
                     // black
                     color: [0, 0, 0],
+                    description: 'The reference term'
                 },
                 kbase: {
-                    label: 'Kbase',
+                    label: 'KBase',
+                    radial: {
+                        length: 100,
+                        width: 5
+                    },
                     // orange
-                    color: [249, 124, 0]
+                    color: [249, 124, 0],
+                    description: 'The KBase annotated term'
                 },
                 fitness: {
                     label: 'Fitness',
                     // green
-                    color: [33, 140, 56]
+                    color: [33, 140, 56],
+                    description: 'The Fitness term'
                 },
                 expression: {
                     label: 'Expression',
                     // purple
-                    color: [130, 61, 142]
+                    color: [130, 61, 142],
+                    description: 'The expression term'
                 }
             }
         };
@@ -90,7 +100,8 @@ define([
             }),
             div({
                 style: {
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    fontSize: '120%'
                 }
             }, 'Legend'),
             div({

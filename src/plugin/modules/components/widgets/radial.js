@@ -1,8 +1,4 @@
-define([
-    'knockout-plus',
-    'numeral',
-    'kb_common/html'
-], function(
+define(['knockout-plus', 'numeral', 'kb_common/html'], function (
     ko,
     numeral,
     html
@@ -11,6 +7,7 @@ define([
 
     var t = html.tag,
         text = t('text'),
+        title = t('title'),
         line = t('line');
 
     var unwrap = ko.utils.unwrapObservable;
@@ -19,7 +16,7 @@ define([
         var radial = params.radial;
         // This points the zero angle at the top
 
-        var it = ko.pureComputed(function() {
+        var it = ko.pureComputed(function () {
             // effects
             if (!radial) {
                 return;
@@ -29,13 +26,16 @@ define([
                 // var offsets = radial.dropShadow.map(function(x) {
                 //     return x + 'px';
                 // }).join(' ');
-                var offsets = radial.dropShadow.offsetX + 'px ' +
-                    radial.dropShadow.offsetY + 'px';
+                var offsets =
+                    radial.dropShadow.offsetX + 'px ' + radial.dropShadow.offsetY + 'px';
                 if (radial.dropShadow.blurRadius) {
                     offsets += ' ' + radial.dropShadow.blurRadius + 'px';
                 }
                 radial.dropShadow.blurRadius + 'px';
-                filters.push('drop-shadow(' + offsets + ' ' + radial.dropShadow.color || 'gray' + ')');
+                filters.push(
+                    'drop-shadow(' + offsets + ' ' + radial.dropShadow.color ||
+                    'gray' + ')'
+                );
             }
             var filter = filters.join(' ');
 
@@ -45,13 +45,15 @@ define([
             var y2 = radial.y + radial.length * Math.sin(angle * 2 * Math.PI);
 
             // THe label
-            var xLabel, yLabel, textFilter;
-            switch (radial.labelStyle) {
+            if (radial.label() !== undefined && radial.label().length > 0) {
+                var xLabel, yLabel, textFilter;
+                switch (radial.labelStyle) {
                 case 'radial':
-                    // This effectively, hopefully, centers the text on the radial by bumping 
-                    // it down (or up) by textAdjust angle. The 0.3 ratio of the font size 
+                    // This effectively, hopefully, centers the text on the radial by bumping
+                    // it down (or up) by textAdjust angle. The 0.3 ratio of the font size
                     // is purely by tria and error.
-                    var textAdjust = (0.3 * radial.fontSize) / (2 * Math.PI * radial.length);
+                    var textAdjust =
+                        0.3 * radial.fontSize / (2 * Math.PI * radial.length);
 
                     var textAngle;
                     if (angle >= 0.25 && angle <= 0.75) {
@@ -60,19 +62,39 @@ define([
                     } else {
                         textAngle = angle;
                     }
-                    xLabel = radial.x + (radial.length + radial.fontSize) * Math.cos((angle + textAdjust) * 2 * Math.PI);
-                    yLabel = radial.y + (radial.length + radial.fontSize) * Math.sin((angle + textAdjust) * 2 * Math.PI);
+                    xLabel =
+                        radial.x +
+                        (radial.length + radial.fontSize) *
+                        Math.cos((angle + textAdjust) * 2 * Math.PI);
+                    yLabel =
+                        radial.y +
+                        (radial.length + radial.fontSize) *
+                        Math.sin((angle + textAdjust) * 2 * Math.PI);
                     var rotateAngle = 360 * textAngle;
                     // label = label + ' - ' + rotateAngle;
-                    textFilter = 'rotate(' + [rotateAngle, xLabel, yLabel].join(' ') + ')';
+                    textFilter =
+                        'rotate(' + [rotateAngle, xLabel, yLabel].join(' ') + ')';
                     break;
                 default:
                     xLabel = x2;
                     if (angle >= 0 && angle <= 0.5) {
                         yLabel = y2 + radial.fontSize;
+                    } else if (angle > -1 && angle <= -0.5) {
+                        yLabel = y2 + radial.fontSize;
                     } else {
                         yLabel = y2 - radial.fontSize / 2;
                     }
+                }
+            }
+
+            var labelShowing = ko.observable(false);
+
+            function doMouseOver() {
+                radial.tooltip.content(radial.description);
+            }
+
+            function doMouseOut() {
+                radial.tooltip.content('');
             }
 
             // var label = radial.label +
@@ -93,14 +115,18 @@ define([
                 fontSize: radial.fontSize + 'px',
                 textFilter: textFilter,
                 value: radial.angle,
-                filter: filter
+                filter: filter,
+                tooltip: radial.tooltip,
+
+                labelShowing: labelShowing,
+                doMouseOver: doMouseOver,
+                doMouseOut: doMouseOut
             };
         });
 
         return {
             radial: it
         };
-
     }
 
     function template() {
@@ -117,9 +143,17 @@ define([
                         stroke: 'stroke',
                         'stroke-width': 'strokeWidth',
                         filter: 'filter'
+                    },
+                    event: {
+                        mouseover: 'doMouseOver',
+                        mouseout: 'doMouseOut'
                     }
+                },
+                style: {
+                    cursor: 'pointer'
                 }
             }),
+            '<!-- ko if: label -->',
             text({
                 dataBind: {
                     attr: {
@@ -133,6 +167,7 @@ define([
                     text: 'label'
                 }
             }),
+            '<!-- /ko -->',
             '<!-- /ko -->',
             '<!-- /ko -->'
         ];

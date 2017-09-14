@@ -1,6 +1,6 @@
 define([
     'kb_common/html'
-], function(
+], function (
     html
 ) {
     'use strict';
@@ -44,7 +44,7 @@ define([
             div({
                 style: {
                     fontWeight: 'bold',
-                    fontSize: '120%',
+                    fontSize: '100%',
                     textDecoration: 'underline'
                 }
             }, label),
@@ -65,10 +65,11 @@ define([
 
     function buildTermsTable(label, type) {
         return table({
-            class: 'table'
+            class: 'table table-condensed table-hover'
         }, [
             tr([
                 th(''),
+                th('alpha'),
                 th('Name'),
                 th('Id'),
                 th('Position'),
@@ -94,6 +95,12 @@ define([
                         }
                     }
                 })),
+                td({
+                    dataBind: {
+                        numberText: 'alpha',
+                        numberFormat: '"0.00"'
+                    }
+                }),
                 td({
                     dataBind: {
                         text: 'term_name'

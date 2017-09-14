@@ -2,13 +2,14 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/html'
-], function(
+], function (
     ko,
     numeral,
     html
 ) {
     'use strict';
     var t = html.tag,
+        text = t('text'),
         svg = t('svg');
 
     // UTILS
@@ -35,14 +36,14 @@ define([
     function komponent(componentDef) {
         return '<!-- ko component: {name: "' + componentDef.name +
             '", params: {' +
-            Object.keys(componentDef.params).map(function(key) {
+            Object.keys(componentDef.params).map(function (key) {
                 return key + ':' + componentDef.params[key];
             }).join(',') + '}}--><!-- /ko -->';
     }
 
     // STRUCTURE MAKERS
 
-    function makeRadial(config, data, path) {
+    function makeRadial(config, data, uiVm, path) {
         var typeData = getProp(data, path).best_term;
         var typeConfig = getProp(config.goConfig, path);
         if (!typeData) {
@@ -50,15 +51,23 @@ define([
         }
         var color = makeColor(typeConfig.color, 1);
         var radial = {
+            // for the radial 
             x: config.x,
             y: config.y,
             angle: typeData.term_position - (config.offset || 0),
-            length: config.radialLength,
-            width: config.radialWidth,
+            length: typeConfig.radial.length,
+            width: typeConfig.radial.width || config.radialWidth,
+            color: color,
+            // for the label 
             fontFamily: config.fontFamily,
             fontSize: config.fontSize,
-            label: typeConfig.label + ' (' + numeral(typeData.term_position).format('0.00') + ')',
-            color: color
+            label: ko.observable(typeConfig.label),
+            // for toolip / mouseover
+            description: typeConfig.description + ' (' + numeral(typeData.term_position).format('0.00') + ')',
+            // label: typeConfig.label + ' (' + numeral(typeData.term_position).format('0.00') + ')',
+            tooltip: {
+                content: uiVm.tooltip
+            }
         };
         return radial;
     }
@@ -87,7 +96,7 @@ define([
     function makeTypeTicks(config, data, path, index) {
         var typeData = getProp(data, path);
         var typeConfig = getProp(config.goConfig, path);
-        return typeData.terms.map(function(termData) {
+        return typeData.terms.map(function (termData) {
             var radius = config.minRadius + config.ringWidth * index;
             // try thihs...
             var theta = (config.tickLength / (2 * Math.PI * radius));
@@ -118,21 +127,25 @@ define([
         // We do that in one place so that we can easily undo it.
         var rotation = data.reference.best_term.term_position;
         config.offset = rotation;
+        var tooltip = ko.observable();
+        var uiVm = {
+            tooltip: tooltip
+        };
         return {
             config: config,
             radials: {
                 kbase: {
-                    radial: makeRadial(config, data, 'kbase')
+                    radial: makeRadial(config, data, uiVm, 'kbase')
                 },
                 community: {
-                    radial: makeRadial(config, data, 'reference')
+                    radial: makeRadial(config, data, uiVm, 'reference')
                 }
             },
-            rings: config.ringLayout.reduce(function(accum, type, index) {
+            rings: config.ringLayout.reduce(function (accum, type, index) {
                 var rings = makeTypeRing(config, data, type, index);
                 return accum.concat(rings);
             }, []),
-            ticks: config.ringLayout.reduce(function(accum, type, index) {
+            ticks: config.ringLayout.reduce(function (accum, type, index) {
                 var rings = makeTypeTicks(config, data, type, index);
                 return accum.concat(rings);
             }, []),
@@ -141,6 +154,17 @@ define([
                 y: config.y,
                 radius: 6,
                 color: 'black'
+            },
+            info: {
+                x: 0,
+                y: config.height - 25,
+                width: config.width,
+                height: 25,
+                text: tooltip,
+                font: {
+                    family: 'sans-serif',
+                    size: '12px'
+                }
             }
         };
     }
@@ -199,6 +223,35 @@ define([
                     color: 'center.color'
                 }
             }),
+            '<!-- ko if: info.text() -->',
+            text({
+                dataBind: {
+                    attr: {
+                        x: 'info.x',
+                        y: 'info.y',
+                        'font-family': 'info.font.family',
+                        'font-size': 'info.font.size'
+                    },
+                    text: 'info.text',
+                    // visible: 'info.text() && info.text().length > 0'
+                }
+            }),
+            '<!-- /ko -->',
+            '<!-- ko ifnot: info.text() -->',
+            text({
+                dataBind: {
+                    attr: {
+                        x: 'info.x',
+                        y: 'info.y',
+                        'font-family': 'info.font.family',
+                        'font-size': 'info.font.size'
+                    },
+                },
+                style: {
+                    fontStyle: 'italic'
+                }
+            }, 'Hover over an element above to see more about it.'),
+            '<!-- /ko -->'
         ]);
     }
 

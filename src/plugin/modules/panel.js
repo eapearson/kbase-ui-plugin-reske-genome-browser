@@ -6,7 +6,7 @@ define([
     'kb_common/jsonRpc/genericClient',
     'kb_common/jsonRpc/dynamicServiceClient',
     'kb_service/utils'
-], function(
+], function (
     Promise,
     html,
     ko,
@@ -29,15 +29,17 @@ define([
         th = t('th'),
         td = t('td');
 
-    function calcScale(value, scaleMin, scaleMax) {
+    function calcScalex(value, scaleMin, scaleMax) {
         // min and max are -ish
         function log(v) {
-            return Math.log(v) / Math.log(4);
+            // return Math.log(v) / Math.log(4);
+            return Math.log10(v);
         }
         var max = Math.abs(log(scaleMin));
         var min = Math.abs(log(scaleMax));
         var range = Math.abs(max - min);
         var val = Math.abs(log(value));
+        var val2 = Math.abs(log(scaleMax) - log(value));
         console.log('scale', min, max, val, range);
         if (val > max) {
             return 1;
@@ -163,7 +165,7 @@ define([
                 return dsClient.callFunc('listFeatures', [{
                         genome_ref: selectedGenome().ref
                     }])
-                    .spread(function(featuresList) {
+                    .spread(function (featuresList) {
                         return featuresList.slice(0, 10);
                     });
             }
@@ -172,7 +174,7 @@ define([
                 return dsClient.callFunc('getTermRelations', [{
                         feature_guid: selectedFeature().feature_guid
                     }])
-                    .spread(function(result) {
+                    .spread(function (result) {
                         return result;
                     });
             }
@@ -206,10 +208,10 @@ define([
             function updateFeatures() {
                 fetchingFeatures(true);
                 fetchFeatures()
-                    .then(function(foundFeatures) {
+                    .then(function (foundFeatures) {
                         features.removeAll();
 
-                        foundFeatures.forEach(function(feature) {
+                        foundFeatures.forEach(function (feature) {
                             features.push(feature);
                         });
                         fetchingFeatures(false);
@@ -227,7 +229,7 @@ define([
             function updateTermRelations() {
                 fetchingTermRelations(true);
                 fetchTermRelations()
-                    .then(function(fetchedTermRelations) {
+                    .then(function (fetchedTermRelations) {
 
                         // var community = fetchedTermRelations.filter(function(relation) {
                         //     return (relation.relation_type === 'community');
@@ -237,18 +239,19 @@ define([
                         //     relation.term_position -= community;
                         // });
 
-                        Object.keys(fetchedTermRelations).forEach(function(typeName) {
+                        Object.keys(fetchedTermRelations).forEach(function (typeName) {
                             var relationType = fetchedTermRelations[typeName];
                             var typeConfig = widgetConfig.goConfig[typeName];
-                            relationType.terms.forEach(function(term) {
+                            relationType.terms.forEach(function (term) {
                                 term.best = (term.term_guid === relationType.best_term.term_guid);
                                 // var alpha = 1 - Math.pow(term.pvalue, 1 / 5);
                                 //var log = Math.abs(Math.log(term.pvalue) / Math.log(4));
                                 // var alpha = Math.min(log, 10) / 10;
-                                var alpha = calcScale(term.pvalue, 0.00001, 0.1);
+                                var alpha = calcScale(term.pvalue, 0.0001, 0.1);
+                                term.alpha = alpha;
                                 term.color = makeColor(typeConfig.color, alpha);
                             });
-                            relationType.terms.sort(function(a, b) {
+                            relationType.terms.sort(function (a, b) {
                                 return a.pvalue - b.pvalue;
                             });
                         });
@@ -263,13 +266,13 @@ define([
 
             // Subscriptions
 
-            selectedGenome.subscribe(function(newValue) {
+            selectedGenome.subscribe(function (newValue) {
                 if (newValue) {
                     updateFeatures();
                 }
             });
 
-            selectedFeature.subscribe(function(newFeature) {
+            selectedFeature.subscribe(function (newFeature) {
                 if (newFeature) {
                     updateTermRelations();
                 } else {
@@ -306,7 +309,7 @@ define([
                 layout.features.collapsed(layout.features.collapsed() ? false : true);
             }
 
-            selectedGenome.subscribe(function(newValue) {
+            selectedGenome.subscribe(function (newValue) {
                 selectedFeature(null);
                 if (newValue) {
                     layout.genomes.collapsed(true);
@@ -315,7 +318,7 @@ define([
                 }
             });
 
-            selectedFeature.subscribe(function(newValue) {
+            selectedFeature.subscribe(function (newValue) {
                 if (newValue) {
                     layout.features.collapsed(true);
                     layout.genomes.collapsed(true);
@@ -518,7 +521,7 @@ define([
                                         })
                                     ]),
                                     tr([
-                                        th('Community'),
+                                        th('Reference'),
                                         td([
                                             div({
                                                 dataBind: {
@@ -579,7 +582,7 @@ define([
                     }, [
                         h3('Genomes'),
                         p([
-                            'Select a genome to explore.'
+                            'Select a genome.'
                         ]),
 
                         div({
@@ -646,7 +649,7 @@ define([
         }
 
         function start(params) {
-            runtime.send('ui', 'setTitle', 'RESKE Gene Function Comparison Tool');
+            runtime.send('ui', 'setTitle', 'RESKE Gene GO Assignment Comparison Tool');
             vm = viewModel();
             render();
         }
@@ -666,7 +669,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };
