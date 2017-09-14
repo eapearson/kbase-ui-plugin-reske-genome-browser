@@ -2,7 +2,7 @@ define([
     'numeral',
     'knockout-plus',
     'kb_common/html'
-], function(
+], function (
     numeral,
     ko,
     html
@@ -26,7 +26,7 @@ define([
     function komponent(componentDef) {
         return '<!-- ko component: {name: "' + componentDef.name +
             '", params: {' +
-            Object.keys(componentDef.params).map(function(key) {
+            Object.keys(componentDef.params).map(function (key) {
                 return key + ':' + componentDef.params[key];
             }).join(',') + '}}--><!-- /ko -->';
     }
@@ -49,7 +49,7 @@ define([
 
         // For the seconds hand.
         var secondsAsAngle = now.getSeconds() / 60;
-        var secondsLabel = now.getSeconds();
+        var secondsLabel = String(now.getSeconds());
         return {
             seconds: {
                 value: {
@@ -212,7 +212,7 @@ define([
                         stroke: 'red',
                         strokeWidth: 0
                     },
-                    tick: (function() {
+                    tick: (function () {
                         return {
                             x: config.x,
                             y: config.y,
@@ -222,6 +222,43 @@ define([
                             width: 10,
                             color: 'white'
                         };
+                    }())
+                },
+                scheduleRing: {
+                    ring: {
+                        ring: {
+                            x: config.x,
+                            y: config.y,
+                            radius: 55,
+                            width: 10,
+                            color: 'white'
+                        }
+                    },
+                    ticks: (function () {
+                        var schedule = [{
+                            label: 'work',
+                            start: 9,
+                            end: 17,
+                            color: 'purple'
+                        }, {
+                            label: 'sleep',
+                            start: 22,
+                            end: 5,
+                            color: 'black'
+                        }];
+                        return schedule.map(function (task) {
+                            return {
+                                tick: {
+                                    x: config.x,
+                                    y: config.y,
+                                    start: task.start / 24,
+                                    theta: (task.end - task.start) / 24,
+                                    radius: 55,
+                                    width: 10,
+                                    color: task.color
+                                }
+                            };
+                        });
                     }())
                 },
                 hoursRing: {
@@ -234,7 +271,7 @@ define([
                             color: 'orange'
                         }
                     },
-                    ticks: (function() {
+                    ticks: (function () {
                         var ticks = [];
                         // we have a 24 hour clock.
                         var totalTicks = 24;
@@ -260,8 +297,8 @@ define([
                         return ticks;
                     }())
                 },
-                majorHours: (function() {
-                    return [0, 6, 12, 18].map(function(hour) {
+                majorHours: (function () {
+                    return [0, 6, 12, 18].map(function (hour) {
                         var theta = 0.02;
                         var angle = hour / 24 - theta / 2;
                         return {
@@ -300,6 +337,24 @@ define([
                 }
             }, [
                 '<!-- ko with: hoursRing -->',
+                '<!-- ko with: ring -->',
+                komponent({
+                    name: 'reske/widget/ring',
+                    params: {
+                        ring: 'ring'
+                    }
+                }),
+                '<!-- /ko -->',
+                '<!-- ko foreach: ticks -->',
+                komponent({
+                    name: 'reske/widget/ringTick',
+                    params: {
+                        tick: 'tick'
+                    }
+                }),
+                '<!-- /ko -->',
+                '<!-- /ko -->',
+                '<!-- ko with: scheduleRing -->',
                 '<!-- ko with: ring -->',
                 komponent({
                     name: 'reske/widget/ring',
@@ -399,7 +454,7 @@ define([
 
         function startClock() {
             function tick() {
-                timer = window.setTimeout(function() {
+                timer = window.setTimeout(function () {
                     // time as an angle.
                     // just do seconds for now...
                     updateClock();
@@ -440,7 +495,7 @@ define([
     }
 
     return {
-        make: function(config) {
+        make: function (config) {
             return factory(config);
         }
     };
