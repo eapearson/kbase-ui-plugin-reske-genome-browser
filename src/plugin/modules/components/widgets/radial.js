@@ -90,11 +90,11 @@ define(['knockout-plus', 'numeral', 'kb_common/html'], function (
             var labelShowing = ko.observable(false);
 
             function doMouseOver() {
-                radial.tooltip.content(radial.description);
+                radial.showTooltip(true);
             }
 
             function doMouseOut() {
-                radial.tooltip.content('');
+                radial.showTooltip(false);
             }
 
             // var label = radial.label +
@@ -116,7 +116,7 @@ define(['knockout-plus', 'numeral', 'kb_common/html'], function (
                 textFilter: textFilter,
                 value: radial.angle,
                 filter: filter,
-                tooltip: radial.tooltip,
+                showTooltip: radial.showTooltip,
 
                 labelShowing: labelShowing,
                 doMouseOver: doMouseOver,

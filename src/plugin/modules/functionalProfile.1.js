@@ -40,6 +40,7 @@ define([
         var range = Math.abs(max - min);
         var val = Math.abs(log(value));
         var val2 = Math.abs(log(scaleMax) - log(value));
+        console.log('scale', min, max, val, range);
         if (val > max) {
             return 1;
         }
@@ -48,6 +49,7 @@ define([
         }
         // var scaled = Math.abs(val / max);
         var scaled = (val - min) / range;
+        console.log('scaled', scaled);
         return scaled;
     }
 
@@ -130,34 +132,9 @@ define([
 
 
 
-        function viewModel() {
+        function viewModel(params) {
 
             // CORE DATA FETCHING 
-
-
-
-
-            // function fetchGenomes() {
-            //     return workspaceClient.callFunc('list_workspace_info', [{
-            //             excludeGlobal: 1
-            //         }])
-            //         .spread(function(workspaces) {
-            //             var workspaceIds = workspaces.map(function(wsInfo) {
-            //                 return wsInfo[0];
-            //             });
-            //             return workspaceClient.callFunc('list_objects', [{
-            //                 ids: workspaceIds,
-            //                 type: 'KBaseGenomes.Genome',
-            //                 includeMetadata: 1,
-            //                 excludeGlobal: 1
-            //             }]);
-            //         })
-            //         .spread(function(genomeObjects) {
-            //             return genomeObjects;
-            //         });
-            // }
-
-
 
             function fetchFeatures() {
                 return dsClient.callFunc('listFeatures', [{
@@ -177,21 +154,12 @@ define([
                     });
             }
 
-            function fetchTermRelationTypes() {
-
-            }
-
             // VIEW MODEL UPDATING FROM FETCHES
 
             // Genomes
-            var selectedGenome = ko.observable();
-            var fetchingGenomes = ko.observable();
-
-
-
-            function doUnselectGenome() {
-                selectedGenome(null);
-            }
+            var selectedGenome = ko.observable({
+                ref: params.ref
+            });
 
             function doUnselectFeature() {
                 selectedFeature(null);
@@ -281,11 +249,6 @@ define([
             // Layout control
 
             var layout = {
-                genomes: {
-                    collapsed: ko.observable(false),
-                    active: ko.observable(true),
-                    width: ko.observable()
-                },
                 features: {
                     collapsed: ko.observable(true),
                     active: ko.observable(false),
@@ -299,10 +262,6 @@ define([
                 }
             };
 
-            function toggleGenomesColumn() {
-                layout.genomes.collapsed(layout.genomes.collapsed() ? false : true);
-            }
-
             function toggleFeaturesColumn() {
                 layout.features.collapsed(layout.features.collapsed() ? false : true);
             }
@@ -310,7 +269,6 @@ define([
             selectedGenome.subscribe(function (newValue) {
                 selectedFeature(null);
                 if (newValue) {
-                    layout.genomes.collapsed(true);
                     layout.features.collapsed(false);
                     layout.relations.collapsed(true);
                 }
@@ -319,19 +277,15 @@ define([
             selectedFeature.subscribe(function (newValue) {
                 if (newValue) {
                     layout.features.collapsed(true);
-                    layout.genomes.collapsed(true);
                     layout.relations.collapsed(false);
                 }
             });
 
             // Main entry point
 
-
-
             return {
                 runtime: runtime,
 
-                fetchingGenomes: fetchingGenomes,
                 selectedGenome: selectedGenome,
                 fetchingFeatures: fetchingFeatures,
                 features: features,
@@ -339,11 +293,9 @@ define([
                 fetchingTermRelations: fetchingTermRelations,
                 termRelations: termRelations,
                 layout: layout,
-                toggleGenomesColumn: toggleGenomesColumn,
                 toggleFeaturesColumn: toggleFeaturesColumn,
 
                 // ACTIONS
-                doUnselectGenome: doUnselectGenome,
                 doUnselectFeature: doUnselectFeature
             };
         }
@@ -356,119 +308,10 @@ define([
                     class: 'row'
                 }, [
                     div({
-                        class: 'col-sm-6'
-                    }, [
-                        // p([
-                        //     'The genome viewer prototyping tool will go here.'
-                        // ]),
-                        // p([
-                        //     'You can also check out the old ',
-                        //     a({
-                        //         href: '#reske/gene-term-tester'
-                        //     }, 'widget testing page'),
-                        //     ' testing page. This never fleshed out '
-                        // ])
-                        // p([
-                        //     'Genome, gene, and predictions browser. ',
-                        //     'You will need to stretch your browser wide as you can go. ',
-                        //     'Not sure of the shape of the final demo, but the next idea to try is to horizontally collapse the genomes and features ',
-                        //     'columns after an item is selected, providing a toggle to open them up for selection. ',
-                        //     'The main point of this version of this page is to generate data to test out the widget prototype.'
-                        // ]),
-                        // p([
-                        //     'Genomes are pulled from RESKE search, so you need to have at least one genome indexed for this to work. ',
-                        //     'Selecting a genome triggers the features (genes) to appear. The features are not related to the genome (yet.)'
-                        // ]),
-                        // p([
-                        //     'The features are pulled via the RESKE listFeatures method. The display is just a quick implementation of the first 10 items. ',
-                        //     'Just enough to be able to trigger the next step. In the next day or so this will be fleshed out into paging table, and show all the columns. At some point after that the service will support paging (at present the front end pulls in 4000+'
-                        // ])
-                    ]),
-                    div({
-                        class: 'col-sm-6'
-                    }),
-                ]),
-                div({
-                    class: 'row'
-                }, [
-                    div({
                         class: 'col-sm-3',
                     }, [
                         h3('Selections'),
-                        p('As you select first a genome and then a gene, the current selections will be displayed below.'),
-                        div({
-                            class: 'well',
-                        }, [
-                            '<!-- ko if: vm.selectedGenome() -->',
-                            div({
-                                dataBind: {
-                                    with: 'vm.selectedGenome'
-                                }
-                            }, [
-                                div({
-                                    style: {
-                                        fontWeight: 'bold',
-                                        color: '#FFF',
-                                        backgroundColor: '#777',
-                                        padding: '4px',
-                                        marginBottom: '4px',
-                                        textAlign: 'center'
-                                    }
-                                }, [
-                                    'Selected Genome'
-                                ]),
-                                div([
-                                    span({
-                                        dataBind: {
-                                            text: 'domain'
-                                        }
-                                    })
-                                ]),
-                                div([
-                                    span({
-                                        dataBind: {
-                                            text: 'scientificName'
-                                        },
-                                        style: {
-                                            fontStyle: 'italic'
-                                        }
-                                    })
-                                ]),
-                                table({
-                                    class: 'table',
-                                    style: {
-                                        marginTop: '6px'
-                                    }
-                                }, [
-                                    tr([
-                                        th('ID'),
-                                        td({
-                                            dataBind: {
-                                                text: 'id'
-                                            }
-                                        })
-                                    ]),
-                                    tr([
-                                        th('# Features'),
-                                        td({
-                                            dataBind: {
-                                                text: 'features'
-                                            }
-                                        })
-                                    ])
-                                ]),
-                                button({
-                                    class: 'btn btn-default',
-                                    dataBind: {
-                                        click: '$root.vm.doUnselectGenome'
-                                    }
-                                }, 'Clear &amp; Select Genome')
-                            ]),
-                            '<!-- /ko -->',
-                            '<!-- ko if: !vm.selectedGenome() -->',
-                            'select a genome',
-                            '<!-- /ko -->'
-                        ]),
+                        p('Select a gene to display the functional profile.'),
                         div({
                             class: 'well',
                         }, [
@@ -560,41 +403,19 @@ define([
                                     dataBind: {
                                         click: '$root.vm.doUnselectFeature'
                                     }
-                                }, 'Clear &amp; Select Feature')
+                                }, 'Clear &amp; Select Another Gene')
                             ]),
                             '<!-- /ko -->',
                             '<!-- ko if: vm.selectedGenome() && !vm.selectedFeature() -->',
-                            'select a feature',
+                            'select a gene',
                             '<!-- /ko -->'
                         ]),
                     ]),
                     '<!-- ko if: !vm.selectedGenome() -->',
                     div({
                         class: 'col-sm-9',
-                        // dataBind: {
-                        //     style: {
-                        //         width: 'vm.layout.genomes.collapsed() ? "50px" : null ',
-                        //         'overflow-x': 'vm.layout.genomes.collapsed() ? "hidden" : null'
-                        //     }
-                        // }
                     }, [
-                        h3('Genomes'),
-                        p([
-                            'Select a genome.'
-                        ]),
-
-                        div({
-                            dataBind: {
-                                component: {
-                                    name: '"reske/genome-browser/genomes/ui"',
-                                    params: {
-                                        runtime: 'vm.runtime',
-                                        selectedGenome: 'vm.selectedGenome',
-                                        fetchingGenomes: 'vm.fetchingGenomes'
-                                    }
-                                }
-                            }
-                        })
+                        'houston? problem.'
                     ]),
                     '<!-- /ko -->',
                     '<!-- ko if: vm.selectedGenome() && !vm.selectedFeature()-->',
@@ -647,8 +468,8 @@ define([
         }
 
         function start(params) {
-            runtime.send('ui', 'setTitle', 'RESKE Gene GO Assignment Comparison Tool');
-            vm = viewModel();
+            runtime.send('ui', 'setTitle', 'Knowledge Engine Functional Profile Viewer');
+            vm = viewModel(params);
             render();
         }
 

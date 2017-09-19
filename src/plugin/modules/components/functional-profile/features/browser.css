@@ -1,0 +1,17 @@
+.reske_functional-profile_features_browser {}
+
+.reske_functional-profile_features_browser .-row {
+    cursor: pointer
+}
+
+.reske_functional-profile_features_browser .-row:hover {
+    background-color: rgba(224, 224, 224, 0.5);
+}
+
+.reske_functional-profile_features_browser .-row.-selected {
+    background-color: rgba(224, 224, 224, 1);
+}
+
+.reske_functional-profile_features_browser .-row.-selected:hover {
+    background-color: rgba(224, 224, 224, 0.5);
+}

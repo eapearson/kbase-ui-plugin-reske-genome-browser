@@ -29,6 +29,10 @@ install:
       id: kb_reskeGenomeBrowser_clockTester
       module: clockTester
       type: factory
+    -
+      id: kb_reskeGenomeBrowser_functionalProfile
+      module: functionalProfile
+      type: factory
   ko-components:
     # -
     #   name: reske/gene-term/genomes-browser
@@ -85,7 +89,27 @@ install:
     -
       name: reske/genome-browser/features/controls
       module: components/features/controls
-      css: false       
+      css: false
+    -
+      name: reske/functional-profile/features/ui
+      module: components/functional-profile/features/ui
+      css: false
+    -
+      name: reske/functional-profile/features/browser
+      module: components/functional-profile/features/browser
+      css: true
+    -
+      name: reske/functional-profile/features/controls
+      module: components/functional-profile/features/controls
+      css: true
+    -
+      name: reske/functional-profile/distance-widget
+      module: components/functional-profile/distanceWidget
+      css: false
+    -
+      name: reske/functional-profile/distance-widget-details
+      module: components/functional-profile/distanceWidgetDetails
+      css: true      
     # widgets
     -
       name: reske/widget/dial
@@ -152,6 +176,15 @@ install:
         - test
         - clock
       widget: kb_reskeGenomeBrowser_clockTester
+      authorization: true
+    -
+      path: 
+        - reske
+        - ke
+        - fp
+      queryParams: 
+        ref: {}
+      widget: kb_reskeGenomeBrowser_functionalProfile
       authorization: true
   menus:
     -

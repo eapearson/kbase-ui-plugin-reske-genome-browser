@@ -1,7 +1,7 @@
 define([
     'knockout-plus',
     'kb_common/html'
-], function (
+], function(
     ko,
     html
 ) {
@@ -18,8 +18,6 @@ define([
         function doHelp() {
             alert('help!');
         }
-
-
         return {
             search: params.searchVM,
             doHelp: doHelp

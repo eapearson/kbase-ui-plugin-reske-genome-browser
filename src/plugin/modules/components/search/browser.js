@@ -11,7 +11,7 @@ searchResultsTemplate - a string indicating the knockout component to display a 
 define([
     'knockout-plus',
     'kb_common/html'
-], function(
+], function (
     ko,
     html
 ) {
@@ -48,7 +48,7 @@ define([
         var pageSize = params.searchVM.pageSize;
         var totalCount = params.searchVM.totalCount;
 
-        var pageStart = ko.pureComputed(function() {
+        var pageStart = ko.pureComputed(function () {
             var p = page();
             if (typeof p !== 'number') {
                 console.error('page needs to be a number!', p);
@@ -56,14 +56,14 @@ define([
             return p * parseInt(pageSize());
         });
 
-        var lastPage = ko.pureComputed(function() {
+        var lastPage = ko.pureComputed(function () {
             return Math.floor(totalCount() / parseInt(pageSize()));
         });
 
 
         // For paging controls, which manipulate the paging variables
         // imported from the searchVM.
-        var pageEnd = ko.pureComputed(function() {
+        var pageEnd = ko.pureComputed(function () {
             return Math.min(pageStart() + parseInt(pageSize()), totalCount()) - 1;
         });
 
@@ -109,7 +109,7 @@ define([
             return (page() === lastPage());
         }
 
-        var pageSizes = [5, 10, 20, 50, 100].map(function(value) {
+        var pageSizes = [5, 10, 20, 50, 100].map(function (value) {
             return {
                 label: String(value),
                 value: String(value)
@@ -291,15 +291,15 @@ define([
                 //     }
                 // }, buildViewControl()),
                 div({
-                    class: 'col col-sm-4',
+                    class: 'col col-sm-6',
                     style: {
-                        textAlign: 'center'
+                        textAlign: 'left'
                     }
                 }, buildPagingControl()),
                 div({
-                    class: 'col col-sm-4',
+                    class: 'col col-sm-6',
                     style: {
-                        textAlign: 'center'
+                        textAlign: 'right'
                     }
                 }, buildPageSizeControl())
             ]),

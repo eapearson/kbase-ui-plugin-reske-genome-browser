@@ -1,0 +1,39 @@
+.component_reske_functional-profile_features_controls .-nav-btn {
+    width: 23px;
+    height: 23px;
+    border: 0px silver solid;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: transparent;
+}
+
+.component_reske_functional-profile_features_controls .-nav-btn:hover {
+    background-color: rgba(224, 224, 224, 1);
+}
+
+.component_reske_functional-profile_features_controls .-nav-btn:active {
+    background-color: rgba(122, 122, 122, 1);
+    color: white;
+}
+
+.component_reske_functional-profile_features_controls .-nav-btn:disabled {
+    color: rgba(224, 224, 224, 1);
+}
+
+.reske_functional-profile_features_controls .-row {
+    cursor: pointer
+}
+
+.reske_functional-profile_features_controls .-row:hover {
+    background-color: rgba(224, 224, 224, 0.5);
+}
+
+.reske_functional-profile_features_controls .-row.-selected {
+    background-color: rgba(224, 224, 224, 1);
+}
+
+.reske_functional-profile_features_controls .-row.-selected:hover {
+    background-color: rgba(224, 224, 224, 0.5);
+}

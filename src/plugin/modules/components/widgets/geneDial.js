@@ -50,6 +50,21 @@ define([
             return;
         }
         var color = makeColor(typeConfig.color, 1);
+        var showTooltip = ko.observable(false);
+        // The data to show in the tooltip when needed.
+        var tooltipData = {
+            type: typeConfig.label,
+            term: typeData,
+        };
+        showTooltip.subscribe(function () {
+            if (showTooltip()) {
+                uiVm.tooltip({
+                    data: tooltipData
+                });
+            } else {
+                uiVm.tooltip(null);
+            }
+        });
         var radial = {
             // for the radial 
             x: config.x,
@@ -64,10 +79,7 @@ define([
             label: ko.observable(typeConfig.label),
             // for toolip / mouseover
             description: typeConfig.description + ' (' + numeral(typeData.term_position).format('0.00') + ')',
-            // label: typeConfig.label + ' (' + numeral(typeData.term_position).format('0.00') + ')',
-            tooltip: {
-                content: uiVm.tooltip
-            }
+            showTooltip: showTooltip
         };
         return radial;
     }
@@ -77,6 +89,7 @@ define([
         // var typeConfig = getProp(config.goConfig, path);
         var radius = config.minRadius + config.ringWidth * index;
         // var typeDef = types[type];
+
         // Note, rings don't even use data.
         return {
             ring: {
@@ -93,13 +106,29 @@ define([
         };
     }
 
-    function makeTypeTicks(config, data, path, index) {
+    function makeTypeTicks(config, data, uiVm, path, index) {
         var typeData = getProp(data, path);
         var typeConfig = getProp(config.goConfig, path);
+
+
         return typeData.terms.map(function (termData) {
             var radius = config.minRadius + config.ringWidth * index;
             // try thihs...
             var theta = (config.tickLength / (2 * Math.PI * radius));
+            var showTooltip = ko.observable(false);
+            var tooltipData = {
+                type: typeConfig.label,
+                term: termData,
+            };
+            showTooltip.subscribe(function () {
+                if (showTooltip()) {
+                    uiVm.tooltip({
+                        data: tooltipData
+                    });
+                } else {
+                    uiVm.tooltip(null);
+                }
+            });
             var tick = {
                 x: config.x,
                 y: config.y,
@@ -108,7 +137,8 @@ define([
                 theta: theta,
                 radius: radius,
                 width: config.ringWidth,
-                color: termData.color
+                color: termData.color,
+                showTooltip: showTooltip
             };
             return {
                 tick: tick
@@ -120,67 +150,80 @@ define([
 
     function viewModel(params) {
         var config = params.config;
-        var data = params.vm.termRelations();
-        // Normally everything is aligned to an axis with 0 to the right. We have
-        // already re-aligned so that 0 as at the top.
-        // Now we need to rotate the axis so that the "ref" needle as at the top.
-        // We do that in one place so that we can easily undo it.
-        var rotation = data.reference.best_term.term_position;
-        config.offset = rotation;
-        var tooltip = ko.observable();
-        var uiVm = {
-            tooltip: tooltip
-        };
-        return {
-            config: config,
-            radials: {
-                kbase: {
-                    radial: makeRadial(config, data, uiVm, 'kbase')
-                },
-                community: {
-                    radial: makeRadial(config, data, uiVm, 'reference')
-                }
-            },
-            rings: config.ringLayout.reduce(function (accum, type, index) {
-                var rings = makeTypeRing(config, data, type, index);
-                return accum.concat(rings);
-            }, []),
-            ticks: config.ringLayout.reduce(function (accum, type, index) {
-                var rings = makeTypeTicks(config, data, type, index);
-                return accum.concat(rings);
-            }, []),
-            center: {
-                x: config.x,
-                y: config.y,
-                radius: 6,
-                color: 'black'
-            },
-            info: {
-                x: 0,
-                y: config.height - 25,
-                width: config.width,
-                height: 25,
-                text: tooltip,
-                font: {
-                    family: 'sans-serif',
-                    size: '12px'
-                }
+
+        var vm = ko.pureComputed(function () {
+            var data = params.vm.termRelations();
+            // Normally everything is aligned to an axis with 0 to the right. We have
+            // already re-aligned so that 0 as at the top.
+            // Now we need to rotate the axis so that the "ref" needle as at the top.
+            // We do that in one place so that we can easily undo it.
+            if (!data.reference.best_term) {
+                return {
+                    display: false
+                };
             }
+            var rotation = data.reference.best_term.term_position;
+            config.offset = rotation;
+            // var tooltipData = ko.observable(null);
+            var uiVm = {
+                tooltip: params.tooltipVm.tooltip
+            };
+            return {
+                display: true,
+                config: config,
+                radials: {
+                    kbase: {
+                        radial: makeRadial(config, data, uiVm, 'kbase')
+                    },
+                    community: {
+                        radial: makeRadial(config, data, uiVm, 'reference')
+                    }
+                },
+                rings: config.ringLayout.reduce(function (accum, type, index) {
+                    var rings = makeTypeRing(config, data, type, index);
+                    return accum.concat(rings);
+                }, []),
+                ticks: config.ringLayout.reduce(function (accum, type, index) {
+                    var rings = makeTypeTicks(config, data, uiVm, type, index);
+                    return accum.concat(rings);
+                }, []),
+                center: {
+                    x: config.x,
+                    y: config.y,
+                    radius: 6,
+                    color: 'black'
+                }
+                // info: {
+                //     x: 0,
+                //     y: config.height - 25,
+                //     width: config.width,
+                //     height: 25,
+                //     text: selectedPath,
+                //     font: {
+                //         family: 'sans-serif',
+                //         size: '12px'
+                //     }
+                // }
+            };
+        });
+
+        return {
+            vm: vm
         };
     }
 
-    function template() {
+    function buildWidget() {
         return svg({
             dataBind: {
                 style: {
                     width: 'config.width',
                     height: 'config.height',
-                }
+                },
             },
-            style: {
-                outline: '1px silver solid',
-                margin: '10px'
-            }
+            // style: {
+            //     outline: '1px silver solid',
+            //     margin: '10px'
+            // }
         }, [
             '<!-- ko foreach: rings -->',
             komponent({
@@ -223,36 +266,49 @@ define([
                     color: 'center.color'
                 }
             }),
-            '<!-- ko if: info.text() -->',
-            text({
-                dataBind: {
-                    attr: {
-                        x: 'info.x',
-                        y: 'info.y',
-                        'font-family': 'info.font.family',
-                        'font-size': 'info.font.size'
-                    },
-                    text: 'info.text',
-                    // visible: 'info.text() && info.text().length > 0'
-                }
-            }),
-            '<!-- /ko -->',
-            '<!-- ko ifnot: info.text() -->',
-            text({
-                dataBind: {
-                    attr: {
-                        x: 'info.x',
-                        y: 'info.y',
-                        'font-family': 'info.font.family',
-                        'font-size': 'info.font.size'
-                    },
-                },
-                style: {
-                    fontStyle: 'italic'
-                }
-            }, 'Hover over an element above to see more about it.'),
-            '<!-- /ko -->'
+            // '<!-- ko if: info.text() -->',
+            // text({
+            //     dataBind: {
+            //         attr: {
+            //             x: 'info.x',
+            //             y: 'info.y',
+            //             'font-family': 'info.font.family',
+            //             'font-size': 'info.font.size'
+            //         },
+            //         text: 'info.text',
+            //         // visible: 'info.text() && info.text().length > 0'
+            //     }
+            // }),
+            // '<!-- /ko -->',
+            // '<!-- ko ifnot: info.text() -->',
+            // text({
+            //     dataBind: {
+            //         attr: {
+            //             x: 'info.x',
+            //             y: 'info.y',
+            //             'font-family': 'info.font.family',
+            //             'font-size': 'info.font.size'
+            //         },
+            //     },
+            //     style: {
+            //         fontStyle: 'italic'
+            //     }
+            // }, 'Hover over an element above to see more about it.'),
+            // '<!-- /ko -->'
         ]);
+    }
+
+    function template() {
+        return [
+            '<!-- ko with: vm -->',
+            '<!-- ko ifnot: display -->',
+            'Cannot display',
+            '<!-- /ko -->',
+            '<!-- ko if: display -->',
+            buildWidget(),
+            '<!-- /ko -->',
+            '<!-- /ko -->'
+        ].join('\n');
     }
 
     function component() {

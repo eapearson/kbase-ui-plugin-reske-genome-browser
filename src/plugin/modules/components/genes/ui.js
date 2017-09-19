@@ -158,7 +158,7 @@ define([
                 // This is from the parent environment.
                 selectedFeature: selectedFeature
             },
-            searchResultsTemplate: 'reske/genome-browser/features/browser'
+            searchResultsTemplate: 'reske/functionalProfile/genes/browser'
         };
     }
 
@@ -170,7 +170,7 @@ define([
                 div({
                     dataBind: {
                         component: {
-                            name: '"reske/genome-browser/features/controls"',
+                            name: '"reske/functionalProfile/genes/controls"',
                             params: {
                                 searchVM: 'searchVM',
                                 searchResultsTemplate: 'searchResultsTemplate'
@@ -183,7 +183,7 @@ define([
                 div({
                     dataBind: {
                         component: {
-                            name: '"reske/genome-browser/search/browser"',
+                            name: '"reske/functionalProfile/genes/browser"',
                             params: {
                                 searchVM: 'searchVM',
                                 searchResultsTemplate: 'searchResultsTemplate'

@@ -2,7 +2,7 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/html'
-], function(
+], function (
     ko,
     numeral,
     html
@@ -17,7 +17,7 @@ define([
     function viewModel(params) {
         var tick = params.tick;
 
-        var pathParts = ko.pureComputed(function() {
+        var pathParts = ko.pureComputed(function () {
             var innerRadius = tick.radius;
             var outerRadius = tick.radius + tick.width;
             var startAngle = unwrap(tick.start) - 0.25;
@@ -56,9 +56,19 @@ define([
             ].join(' ');
         });
 
+        function doMouseOver() {
+            tick.showTooltip(true);
+        }
+
+        function doMouseOut() {
+            tick.showTooltip(false);
+        }
+
         return {
             pathParts: pathParts,
-            tick: tick
+            tick: tick,
+            doMouseOver: doMouseOver,
+            doMouseOut: doMouseOut
         };
     }
 
@@ -68,6 +78,10 @@ define([
                 attr: {
                     d: 'pathParts',
                     fill: 'tick.color'
+                },
+                event: {
+                    mouseover: 'doMouseOver',
+                    mouseout: 'doMouseOut'
                 }
             }
         });
