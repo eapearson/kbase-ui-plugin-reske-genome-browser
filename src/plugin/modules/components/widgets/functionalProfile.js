@@ -14,7 +14,7 @@ define([
         div = t('div');
 
     function viewModel(params) {
-        if (params.vm.termRelations().reference.terms.length === 0) {
+        if (!params.vm.termRelations().reference.best_term) {
             return {
                 displayable: false,
                 message: 'Cannot display without reference term'
@@ -41,7 +41,7 @@ define([
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
             tickLength: 10, // in pixels
-            ringLayout: ['reference', 'kbase', 'fitness', 'expression'],
+            ringLayout: ['kbase', 'fitness', 'expression'],
             leftMargin: 10,
             goConfig: {
                 reference: {

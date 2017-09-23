@@ -13,26 +13,6 @@ define([
         td = t('td');
 
     function viewModel(params) {
-        // sort by pvalue so that the best appear at the top...
-
-        // hmm, should we sort in-situ or copy the data?
-
-        // function makeSection(type) {
-        //     var typeData = params.vm.termRelations()[type];
-
-        // }
-
-        // // okay, we are gonna need to craft the legend here...
-
-        // var legend = {
-        //     sections: [
-        //         {
-        //             title: 'Reference',
-        //             items: makeSection('reference')
-        //         }
-        //     ]
-        // }
-
         return {
             config: params.config,
             vm: params.vm
@@ -40,6 +20,33 @@ define([
     }
 
     function buildTerms(label, type) {
+        return [
+            div({
+                style: {
+                    // fontWeight: 'bold',
+                    fontSize: '100%',
+                    // textDecoration: 'underline'
+                    padding: '4px',
+                    color: 'white',
+                    backgroundColor: 'gray'
+                }
+            }, label),
+            '<!-- ko if: $data.' + type + ' && ' + type + '.terms.length > 0 -->',
+            buildTermsTable(label, type),
+            '<!-- /ko -->',
+            '<!-- ko if: !$data.' + type + ' || ' + type + '.terms.length === 0 -->',
+            div({
+                style: {
+                    fontStyle: 'italic',
+                    textAlign: 'center'
+                }
+            }, 'sorry, no data for this type'),
+            '<!-- /ko -->'
+        ];
+
+    }
+
+    function buildReferenceTerm(label, type) {
         return [
             div({
                 style: {
@@ -132,8 +139,8 @@ define([
     function buildTermRelations() {
         return [
             '<!-- ko with: vm.termRelations -->',
-            buildTerms('Reference', 'reference'),
-            buildTerms('KBase', 'kbase'),
+            buildTerms('User', 'reference'),
+            buildTerms('Inferred', 'kbase'),
             buildTerms('Fitness', 'fitness'),
             buildTerms('Expression', 'expression'),
             '<!-- /ko -->'

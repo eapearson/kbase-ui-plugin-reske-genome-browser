@@ -14,8 +14,18 @@ define([
 
 
     function viewModel(params) {
+
+        var miniLegend = [{
+            color: 'red',
+            label: 'Red'
+        }, {
+            color: 'blue',
+            label: 'Blue'
+        }];
+
         return {
-            vm: params.tooltipVm
+            vm: params.tooltipVm,
+            miniLegend: miniLegend
         };
     }
 
@@ -75,14 +85,56 @@ define([
         ]);
     }
 
+    function buildMiniLegend() {
+        return table({
+            dataBind: {
+                foreach: 'miniLegend'
+            },
+            class: '-mini-legend'
+        }, [
+            tr([
+                td(div({
+                    dataBind: {
+                        style: {
+                            'background-color': 'color'
+                        }
+                    },
+                    style: {
+                        width: '15px',
+                        height: '15px'
+                    }
+                })),
+                td({
+                    dataBind: {
+                        text: 'label'
+                    },
+                    style: {
+
+                    }
+                })
+            ])
+        ]);
+    }
+
     function template() {
-        return div([
-            '<!-- ko if: vm.tooltip() -->',
-            buildTooltip(),
-            '<!-- /ko -->',
-            '<!-- ko ifnot: vm.tooltip() -->',
-            'Hover over a chart item to see the tooltip',
-            '<!-- /ko -->',
+        return div({
+            class: 'reske_functional-profile_distance-widget-details'
+        }, [
+            div({
+                style: {
+                    height: '250px',
+                    border: '1px silver solid',
+                    padding: '4px'
+                }
+            }, [
+                '<!-- ko if: vm.tooltip() -->',
+                buildTooltip(),
+                '<!-- /ko -->',
+                '<!-- ko ifnot: vm.tooltip() -->',
+                'Hover over a chart item to see details',
+                '<!-- /ko -->'
+            ]),
+            // buildMiniLegend()
         ]);
     }
 

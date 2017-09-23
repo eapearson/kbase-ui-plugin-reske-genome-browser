@@ -13,11 +13,11 @@ define([
 
     function viewModel(params, componentInfo) {
 
-        var vm = params.searchVM;
+        var search = params.searchVM;
 
         var height = ko.observable();
         height.subscribe(function (newValue) {
-            vm.availableRowHeight(newValue);
+            search.availableRowHeight(newValue);
         });
 
         var resizerTimeout = 200;
@@ -34,21 +34,25 @@ define([
         }
         window.addEventListener('resize', resizer, false);
         // height(componentInfo.element.querySelector('[name="features"]').clientHeight);
-        resizer();
+        search.fetchingFeatures.subscribe(function (newValue) {
+            if (newValue) {
+                resizer();
+            }
+        });
 
         function doSelectFeature(data) {
-            params.searchVM.selectedFeature(data);
+            search.selectedFeature(data);
         }
         var selectedFeatureGuid = ko.pureComputed(function () {
-            if (!vm.selectedFeature()) {
+            if (!search.selectedFeature()) {
                 return null;
             }
-            return vm.selectedFeature().feature_guid;
+            return search.selectedFeature().feature_guid;
         });
         return {
             doSelectFeature: doSelectFeature,
             selectedFeatureGuid: selectedFeatureGuid,
-            vm: vm
+            search: search
         };
     }
 
@@ -142,17 +146,16 @@ define([
             }, [
                 div({
                     style: {
-                        flex: '1 1 auto',
+                        flex: '1 1 0px',
                         height: '25px',
                         overflowX: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap'
-                    }
-                }, span({
+                    },
                     dataBind: {
                         text: 'reference_term_name'
                     }
-                })),
+                }),
                 div({
                     dataBind: {
                         text: 'reference_term_guid'
@@ -197,6 +200,15 @@ define([
         ]);
     }
 
+    function buildError() {
+        return div({
+            class: 'well danger',
+            dataBind: {
+                text: 'search.error().mesage'
+            }
+        });
+    }
+
     function template() {
         return div({
             class: 'reske_functional-profile_features_browser',
@@ -204,20 +216,28 @@ define([
                 flex: '1 1 0px',
                 display: 'flex',
                 flexDirection: 'column'
-            }
+            },
+            name: 'features'
         }, [
             buildHeader(),
+            '<!-- ko if: search.fetchingFeatures -->',
+            html.loading(),
+            '<!-- /ko -->',
+            '<!-- ko ifnot: search.fetchingFeatures -->',
             div({
                 dataBind: {
-                    foreach: 'vm.features'
+                    foreach: 'search.features'
                 },
                 style: {
                     flex: '1 1 0px',
                     display: 'flex',
                     flexDirection: 'column'
-                },
-                name: 'features'
-            }, buildRow())
+                }
+            }, buildRow()),
+            '<!-- /ko -->',
+            '<!-- ko if: search.error -->',
+            buildError(),
+            '<!-- /ko -->'
         ]);
         // var container = document.createElement('div');
         // container.innerHTML = markup;

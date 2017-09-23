@@ -23,7 +23,7 @@ define([
                     message: 'term relations not ready yet, please select a gene...'
                 };
             }
-            if (params.vm.termRelations().reference.terms.length === 0) {
+            if (!params.vm.termRelations().reference.best_term) {
                 return {
                     displayable: false,
                     message: 'Cannot display without reference term'
@@ -56,11 +56,11 @@ define([
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
             tickLength: 10, // in pixels
-            ringLayout: ['reference', 'kbase', 'fitness', 'expression'],
+            ringLayout: ['kbase', 'fitness', 'expression'],
             leftMargin: 10,
             goConfig: {
                 reference: {
-                    label: 'Ref',
+                    label: 'User',
                     radial: {
                         length: 70,
                         width: 5
@@ -70,7 +70,7 @@ define([
                     description: 'The reference term'
                 },
                 kbase: {
-                    label: 'KBase',
+                    label: 'Inferred',
                     radial: {
                         length: 100,
                         width: 5

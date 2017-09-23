@@ -4,32 +4,21 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/dynamicServiceClient',
-    'kb_service/utils'
+    'kb_common/jsonRpc/dynamicServiceClient'
 ], function (
     Promise,
     html,
     ko,
     numeral,
     GenericClient,
-    DynamicServiceClient,
-    serviceUtils
+    DynamicServiceClient
 ) {
     'use string';
 
     var t = html.tag,
         div = t('div'),
-        input = t('input'),
-        span = t('span'),
         h3 = t('h3'),
-        h2 = t('h2'),
-        a = t('a'),
-        button = t('button'),
-        p = t('p'),
-        table = t('table'),
-        tr = t('tr'),
-        th = t('th'),
-        td = t('td');
+        h2 = t('h2');
 
     function calcScalex(value, scaleMin, scaleMax) {
         // min and max are -ish
@@ -93,7 +82,7 @@ define([
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
             tickLength: 6, // in pixels
-            ringLayout: ['reference', 'kbase', 'fitness', 'expression'],
+            ringLayout: ['kbase', 'fitness', 'expression'],
             leftMargin: 10,
             goConfig: {
                 reference: {
@@ -116,23 +105,10 @@ define([
                     // purple
                     color: [130, 61, 142]
                 }
-            },
-            // legend: {
-            //     leftMargin: 10,
-            //     top: 300,
-            //     swatchSize: 10
-            // }
+            }
         };
 
-        // var workspaceClient = new GenericClient({
-        //     url: runtime.config('services.workspace.url'),
-        //     token: runtime.service('session').getAuthToken(),
-        //     module: 'Workspace'
-        // });
-
-
-
-        function viewModel(params, componentInfo) {
+        function viewModel(params) {
             // CORE DATA FETCHING 
 
             function fetchFeatures() {
@@ -163,7 +139,6 @@ define([
             function doUnselectFeature() {
                 selectedFeature(null);
             }
-
 
             // Features
             var fetchingFeatures = ko.observable(false);
@@ -198,31 +173,36 @@ define([
                 fetchingTermRelations(true);
                 fetchTermRelations()
                     .then(function (fetchedTermRelations) {
-
-                        // var community = fetchedTermRelations.filter(function(relation) {
-                        //     return (relation.relation_type === 'community');
-                        // })[0].term_position;
-
-                        // fetchedTermRelations.forEach(function(relation) {
-                        //     relation.term_position -= community;
-                        // });
-
-
+                        // console.log('TERMS', fetchedTermRelations);
                         Object.keys(fetchedTermRelations).forEach(function (typeName) {
                             var relationType = fetchedTermRelations[typeName];
                             var typeConfig = widgetConfig.goConfig[typeName];
-                            relationType.terms.forEach(function (term) {
-                                term.best = (term.term_guid === relationType.best_term.term_guid);
-                                // var alpha = 1 - Math.pow(term.pvalue, 1 / 5);
-                                //var log = Math.abs(Math.log(term.pvalue) / Math.log(4));
-                                // var alpha = Math.min(log, 10) / 10;
-                                var alpha = calcScale(term.pvalue, 0.0001, 0.1);
-                                term.alpha = alpha;
-                                term.color = makeColor(typeConfig.color, alpha);
-                            });
-                            relationType.terms.sort(function (a, b) {
-                                return a.pvalue - b.pvalue;
-                            });
+                            relationType.terms = relationType.terms
+                                .map(function (term) {
+                                    // filter out bad terms.
+                                    if (term.term_position === 'Infinity') {
+                                        console.warn('term with infinity position omitted for ' + typeName, term);
+                                        return;
+                                    }
+                                    // if (term.term_position > 1) {
+                                    //     console.warn('term with position > 1 truncated to 1 for ' + typeName, term);
+                                    //     term.term_position = 1;
+                                    // }
+                                    term.best = (term.term_guid === relationType.best_term.term_guid);
+                                    // var alpha = 1 - Math.pow(term.pvalue, 1 / 5);
+                                    //var log = Math.abs(Math.log(term.pvalue) / Math.log(4));
+                                    // var alpha = Math.min(log, 10) / 10;
+                                    var alpha = calcScale(term.pvalue, 0.0001, 0.1);
+                                    term.alpha = alpha;
+                                    term.color = makeColor(typeConfig.color, alpha);
+                                    return term;
+                                })
+                                .filter(function (term) {
+                                    return term ? true : false;
+                                })
+                                .sort(function (a, b) {
+                                    return a.pvalue - b.pvalue;
+                                });
 
                         });
 
@@ -281,8 +261,6 @@ define([
                 }
             });
 
-
-
             // Main entry point
 
             return {
@@ -306,21 +284,6 @@ define([
                 // ACTIONS
                 doUnselectFeature: doUnselectFeature
             };
-        }
-
-
-        function buildFunctionalProfileWidget() {
-            return div({
-                dataBind: {
-                    component: {
-                        name: '"reske/functional-profile/distance-widget"',
-                        params: {
-                            runtime: 'runtime',
-                            vm: 'vm'
-                        }
-                    }
-                }
-            });
         }
 
         function komponent(componentDef) {
@@ -351,10 +314,13 @@ define([
                 }, [
                     div({
                         style: {
-                            // border: '1px silver solid',
                             flex: '0 0 50px'
                         }
-                    }, h3('Genes')),
+                    }, h2({
+                        style: {
+                            textAlign: 'center'
+                        }
+                    }, 'Genes')),
                     div({
                         style: {
                             flex: '1 1 0px',
@@ -383,105 +349,34 @@ define([
                 }, [
                     div({
                         style: {
-                            // border: '1px silver solid',
                             width: '100%',
                             flex: '0 0 50px'
                         }
-                    }, h3('Functional Profile')),
+                    }, h2({
+                        style: {
+                            textAlign: 'center'
+                        }
+                    }, 'Functional Profile')),
                     div({
                         style: {
-                            // border: '1px silver solid',
                             width: '100%',
-                            flex: '1 1 0px'
+                            flex: '1 1 0px',
+                            overflowY: 'auto'
                         }
-                    }, buildFunctionalProfileWidget())
+                    }, div({
+                        dataBind: {
+                            component: {
+                                name: '"reske/functional-profile/distance-widget"',
+                                params: {
+                                    runtime: 'runtime',
+                                    vm: 'vm'
+                                }
+                            }
+                        }
+                    }))
                 ])
             ]);
         }
-
-        // function renderx() {
-        //     container.innerHTML = div({
-        //         style: {
-        //             backgrounColor: 'blue',
-        //             flex: '1 1 0px',
-        //             display: 'flex',
-        //             fiexDirection: 'column'
-        //         }
-        //     }, [
-        //         // the genes column
-        //         div({
-        //             style: {
-        //                 backgroundColor: 'yellow',
-        //                 flex: '1 1 0px',
-        //                 display: 'flex',
-        //                 flexDirection: 'column'
-        //             }
-        //         }, [
-        //             div({
-        //                 style: {
-        //                     border: '1px silver solid',
-        //                     flex: '0 0 50px'
-        //                 }
-        //             }, h3('Genes')),
-        //             div({
-        //                 style: {
-        //                     border: '1px silver solid',
-        //                     flex: '0 0 25px',
-        //                     display: 'flex',
-        //                     flexDirection: 'row'
-        //                 }
-        //             }, [
-        //                 div({
-        //                     style: {
-        //                         flex: '1 1 0px'
-        //                     }
-        //                 }, buildNav()),
-        //                 div({
-        //                     style: {
-        //                         flex: '1 1 0px'
-        //                     }
-        //                 }, buildSearch()),
-        //             ]),
-        //             div({
-        //                 style: {
-        //                     border: '1px silver solid',
-        //                     flex: '1 1 0px',
-        //                     display: 'flex',
-        //                     flexDirection: 'column'
-        //                 }
-        //             }, [
-        //                 buildHeader(),
-        //                 buildRow()
-        //             ])
-        //         ]),
-        //         // the functional profile column
-        //         div({
-        //             style: {
-        //                 backgroundColor: 'green',
-        //                 flex: '1 1 0px',
-        //                 display: 'flex',
-        //                 flexDirection: 'column'
-        //             }
-        //         }, [
-        //             div({
-        //                 style: {
-        //                     border: '1px silver solid',
-        //                     width: '100%',
-        //                     flex: '0 0 50px'
-        //                 }
-        //             }, h3('Functional Profile')),
-        //             div({
-        //                 style: {
-        //                     border: '1px silver solid',
-        //                     width: '100%',
-        //                     flex: '1 1 0px'
-        //                 }
-        //             }, buildFunctionalProfileWidget())
-        //         ])
-        //     ]);
-        // }
-
-
 
         function attach(node) {
             hostNode = node;

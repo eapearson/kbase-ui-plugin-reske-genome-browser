@@ -9,7 +9,7 @@ define([
 ) {
     'use strict';
     var t = html.tag,
-        text = t('text'),
+        div = t('div'),
         svg = t('svg');
 
     // UTILS
@@ -85,12 +85,13 @@ define([
     }
 
     function makeTypeRing(config, data, path, index) {
-        // var typeData = getProp(data, path);
-        // var typeConfig = getProp(config.goConfig, path);
         var radius = config.minRadius + config.ringWidth * index;
-        // var typeDef = types[type];
 
         // Note, rings don't even use data.
+        // Note: this design, building rings purely on the position of the 
+        // ring in the configuration, implies that we build rings even if there
+        // is no data for the ring, which we don't discover here because we
+        // don't inspect the data at all.
         return {
             ring: {
                 x: config.x,
@@ -101,7 +102,6 @@ define([
                     color: 'silver',
                     width: 1
                 }
-                // color: typeConfig.color
             }
         };
     }
@@ -110,6 +110,9 @@ define([
         var typeData = getProp(data, path);
         var typeConfig = getProp(config.goConfig, path);
 
+        if (!typeData) {
+            return [];
+        }
 
         return typeData.terms.map(function (termData) {
             var radius = config.minRadius + config.ringWidth * index;
@@ -153,13 +156,17 @@ define([
 
         var vm = ko.pureComputed(function () {
             var data = params.vm.termRelations();
+            var error = ko.observable();
             // Normally everything is aligned to an axis with 0 to the right. We have
             // already re-aligned so that 0 as at the top.
             // Now we need to rotate the axis so that the "ref" needle as at the top.
             // We do that in one place so that we can easily undo it.
             if (!data.reference.best_term) {
+                error({
+                    message: 'Cannot display graph - no reference term for the gene'
+                });
                 return {
-                    display: false
+                    error: error
                 };
             }
             var rotation = data.reference.best_term.term_position;
@@ -169,7 +176,7 @@ define([
                 tooltip: params.tooltipVm.tooltip
             };
             return {
-                display: true,
+                error: error,
                 config: config,
                 radials: {
                     kbase: {
@@ -179,31 +186,26 @@ define([
                         radial: makeRadial(config, data, uiVm, 'reference')
                     }
                 },
-                rings: config.ringLayout.reduce(function (accum, type, index) {
-                    var rings = makeTypeRing(config, data, type, index);
-                    return accum.concat(rings);
-                }, []),
-                ticks: config.ringLayout.reduce(function (accum, type, index) {
-                    var rings = makeTypeTicks(config, data, uiVm, type, index);
-                    return accum.concat(rings);
-                }, []),
+                rings: config.ringLayout
+                    .reduce(function (accum, type, index) {
+                        return accum.concat(makeTypeRing(config, data, type, index));
+                    }, [])
+                    .filter(function (ring) {
+                        return ring ? true : false;
+                    }),
+                ticks: config.ringLayout
+                    .reduce(function (accum, type, index) {
+                        return accum.concat(makeTypeTicks(config, data, uiVm, type, index));
+                    }, [])
+                    .filter(function (ticks) {
+                        return ticks ? true : false;
+                    }),
                 center: {
                     x: config.x,
                     y: config.y,
                     radius: 6,
                     color: 'black'
                 }
-                // info: {
-                //     x: 0,
-                //     y: config.height - 25,
-                //     width: config.width,
-                //     height: 25,
-                //     text: selectedPath,
-                //     font: {
-                //         family: 'sans-serif',
-                //         size: '12px'
-                //     }
-                // }
             };
         });
 
@@ -298,13 +300,22 @@ define([
         ]);
     }
 
+    function buildError() {
+        return div({
+            class: 'well danger',
+            dataBind: {
+                text: 'search.error().mesage'
+            }
+        });
+    }
+
     function template() {
         return [
             '<!-- ko with: vm -->',
-            '<!-- ko ifnot: display -->',
-            'Cannot display',
+            '<!-- ko if: error -->',
+            buildError(),
             '<!-- /ko -->',
-            '<!-- ko if: display -->',
+            '<!-- ko ifnot: error -->',
             buildWidget(),
             '<!-- /ko -->',
             '<!-- /ko -->'

@@ -77,6 +77,7 @@ define([
                             genome_ref: selectedGenome().ref
                         }])
                         .spread(function (featuresList) {
+                            console.log('got...', featuresList);
                             cachedFeatures = featuresList.map(function (item, index) {
                                 item.rowNumber = index;
                                 return item;
@@ -87,13 +88,14 @@ define([
                 })
                 .then(function (features) {
                     // Fake filtering.
+                    console.log('features', features);
                     var filter = searchInput();
                     if (filter) {
                         isSearching(true);
                         // any substring.
                         var filterRe = new RegExp('.*' + filter + '.*', 'i');
                         features = features.filter(function (feature) {
-                            return (filterRe.exec(feature.name) ||
+                            return (filterRe.exec(feature.feature_name) ||
                                 filterRe.exec(feature.reference_term_name) ||
                                 filterRe.exec(feature.kbase_term_name) |
                                 filterRe.exec(feature.reference_term_guid) ||
@@ -112,8 +114,19 @@ define([
                     firstItem(start + 1);
                     lastItem(end);
 
+                    selectedFeature(features[0]);
+
                     return features.slice(start, end);
                 });
+        }
+
+        var error = ko.observable();
+
+        function normalizeError(error) {
+            console.log('normalizing: ', error);
+            return {
+                message: error.message
+            };
         }
 
         function updateFeatures() {
@@ -121,10 +134,16 @@ define([
             isSearching(true);
             fetchFeatures()
                 .then(function (foundFeatures) {
+                    console.log('done?', foundFeatures);
                     features.removeAll();
                     foundFeatures.forEach(function (feature) {
                         features.push(feature);
                     });
+                })
+                .catch(function (err) {
+                    error(normalizeError(err));
+                })
+                .finally(function () {
                     fetchingFeatures(false);
                     isSearching(false);
                 });
@@ -175,8 +194,11 @@ define([
                 isSearching: isSearching,
                 // This is from the parent environment.
                 selectedFeature: selectedFeature,
+                fetchingFeatures: fetchingFeatures,
 
-                availableRowHeight: availableRowHeight
+                availableRowHeight: availableRowHeight,
+
+                error: error
             },
             searchResultsTemplate: 'reske/functional-profile/features/browser'
         };

@@ -14,7 +14,7 @@ define([
         div = t('div');
 
     function viewModel(params) {
-        if (params.vm.termRelations().reference.terms.length === 0) {
+        if (!params.vm.termRelations().reference.best_term) {
             return {
                 displayable: false,
                 message: 'Cannot display without reference term'

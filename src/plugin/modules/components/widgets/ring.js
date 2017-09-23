@@ -2,7 +2,7 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/html'
-], function(
+], function (
     ko,
     numeral,
     html

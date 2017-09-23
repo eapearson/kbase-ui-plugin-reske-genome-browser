@@ -109,7 +109,7 @@ install:
     -
       name: reske/functional-profile/distance-widget-details
       module: components/functional-profile/distanceWidgetDetails
-      css: true      
+      css: true
     # widgets
     -
       name: reske/widget/dial
