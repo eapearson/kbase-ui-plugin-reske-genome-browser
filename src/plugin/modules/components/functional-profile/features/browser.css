@@ -14,7 +14,7 @@
     background-color: rgba(224, 224, 224, 0.5);
 }
 
-.rkb-flex-table .kb-flex-table-row.-selected {
+.kb-flex-table .kb-flex-table-row.-selected {
     background-color: rgba(224, 224, 224, 1);
 }
 
