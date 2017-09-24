@@ -8,6 +8,8 @@ define([
     var t = html.tag,
         div = t('div'),
         table = t('table'),
+        thead = t('thead'),
+        tbody = t('tbody'),
         tr = t('tr'),
         th = t('th'),
         td = t('td');
@@ -27,12 +29,101 @@ define([
                     fontSize: '100%',
                     // textDecoration: 'underline'
                     padding: '4px',
-                    color: 'white',
-                    backgroundColor: 'gray'
+                    color: 'black',
+                    fontWeight: 'bold',
+                    backgroundColor: 'silver'
                 }
             }, label),
             '<!-- ko if: $data.' + type + ' && ' + type + '.terms.length > 0 -->',
             buildTermsTable(label, type),
+            '<!-- /ko -->',
+            '<!-- ko if: !$data.' + type + ' || ' + type + '.terms.length === 0 -->',
+            div({
+                style: {
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    marginBottom: '10px'
+                }
+            }, 'sorry, no data for this type'),
+            '<!-- /ko -->'
+        ];
+
+    }
+
+    function buildUserTermsTable(label, type) {
+        return table({
+            class: ''
+        }, [
+            // tr([
+            //     th(''),
+            //     // th('alpha'),
+            //     th('Name'),
+            //     th('Id'),
+            //     th(''),
+            //     th('')
+            // ]),
+
+            tr(th({ colspan: '5' })),
+
+            '<!-- ko foreach: ' + type + '.terms -->',
+            tr({
+                dataBind: {
+                    style: {
+                        'font-weight': 'best ? "bold" : "normal" '
+                    }
+                }
+            }, [
+                td(div({
+                    style: {
+                        border: '1px silver solid',
+                        width: '15px',
+                        height: '15px'
+                    },
+                    dataBind: {
+                        style: {
+                            'background-color': 'color'
+                        }
+                    }
+                })),
+                // td({
+                //     dataBind: {
+                //         numberText: 'alpha',
+                //         numberFormat: '"0.00"'
+                //     }
+                // }),
+                td({
+                    dataBind: {
+                        text: 'term_name'
+                    }
+                }),
+                td({
+                    dataBind: {
+                        text: 'term_guid'
+                    }
+                }),
+
+                td(),
+                td()
+            ]),
+            '<!-- /ko -->'
+        ]);
+    }
+
+    function buildUserTerm(label, type) {
+        return [
+            div({
+                style: {
+                    // fontWeight: 'bold',
+                    fontSize: '100%',
+                    // textDecoration: 'underline'
+                    padding: '4px',
+                    color: 'black',
+                    fontWeight: 'bold',
+                    backgroundColor: 'silver'
+                }
+            }, label),
+            '<!-- ko if: $data.' + type + ' && ' + type + '.terms.length > 0 -->',
+            buildUserTermsTable(label, type),
             '<!-- /ko -->',
             '<!-- ko if: !$data.' + type + ' || ' + type + '.terms.length === 0 -->',
             div({
@@ -70,18 +161,37 @@ define([
 
     }
 
+    function buildJustHeader() {
+        return table({
+            style: {
+                marginBottom: '0'
+            }
+        }, [
+            thead(
+                tr([
+                    th(''),
+                    // th('alpha'),
+                    th('GO Term'),
+                    th('Id'),
+                    th('Distance'),
+                    th('p-value')
+                ]))
+        ]);
+    }
+
     function buildTermsTable(label, type) {
         return table({
-            class: 'table table-condensed table-hover'
-        }, [
-            tr([
-                th(''),
-                th('alpha'),
-                th('Name'),
-                th('Id'),
-                th('Position'),
-                th('p-value')
-            ]),
+            class: ''
+        }, tbody([
+            // tr([
+            //     th(''),
+            //     // th('alpha'),
+            //     th('Name'),
+            //     th('Id'),
+            //     th('Distance'),
+            //     th('p-value')
+            // ]),
+            tr(th({ colspan: '5' })),
             '<!-- ko foreach: ' + type + '.terms -->',
             tr({
                 dataBind: {
@@ -102,12 +212,12 @@ define([
                         }
                     }
                 })),
-                td({
-                    dataBind: {
-                        numberText: 'alpha',
-                        numberFormat: '"0.00"'
-                    }
-                }),
+                // td({
+                //     dataBind: {
+                //         numberText: 'alpha',
+                //         numberFormat: '"0.00"'
+                //     }
+                // }),
                 td({
                     dataBind: {
                         text: 'term_name'
@@ -133,14 +243,15 @@ define([
                 })
             ]),
             '<!-- /ko -->'
-        ]);
+        ]));
     }
 
     function buildTermRelations() {
         return [
+            buildJustHeader(),
             '<!-- ko with: vm.termRelations -->',
-            buildTerms('User', 'reference'),
-            buildTerms('Inferred', 'kbase'),
+            buildUserTerm('User', 'reference'),
+            buildTerms('Ortholog', 'kbase'),
             buildTerms('Fitness', 'fitness'),
             buildTerms('Expression', 'expression'),
             '<!-- /ko -->'

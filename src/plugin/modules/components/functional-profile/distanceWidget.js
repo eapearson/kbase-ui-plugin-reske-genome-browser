@@ -24,15 +24,15 @@ define([
             }
             if (!params.vm.termRelations().reference.best_term) {
                 return {
-                    error: true,
-                    message: 'Cannot display without reference term'
+                    displayable: false,
+                    message: 'Cannot display without User term'
                 };
             }
 
-            if (params.vm.termRelations().kbase.terms.length === 0) {
+            if (!params.vm.termRelations().kbase.best_term) {
                 return {
-                    error: true,
-                    message: 'Cannot display without kbase term'
+                    displayable: false,
+                    message: 'Cannot display without Orhtolog term'
                 };
             }
 
@@ -54,7 +54,7 @@ define([
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
             tickLength: 10, // in pixels
-            ringLayout: ['kbase', 'fitness', 'expression'],
+            ringLayout: ['fitness', 'expression'],
             leftMargin: 10,
             goConfig: {
                 reference: {
@@ -68,14 +68,14 @@ define([
                     description: 'The reference term'
                 },
                 kbase: {
-                    label: 'Inferred',
+                    label: 'Ortholog',
                     radial: {
                         length: 100,
                         width: 5
                     },
                     // orange
                     color: [249, 124, 0],
-                    description: 'The KBase annotated term'
+                    description: 'The Ortholog term'
                 },
                 fitness: {
                     label: 'Fitness',
@@ -122,7 +122,8 @@ define([
             div({
                 style: {
                     fontWeight: 'bold',
-                    fontSize: '120%'
+                    fontSize: '120%',
+                    marginBottom: '4px;'
                 }
             }, 'Legend'),
             div({
@@ -178,7 +179,8 @@ define([
             div({
                 style: {
                     fontWeight: 'bold',
-                    fontSize: '120%'
+                    fontSize: '120%',
+                    marginBottom: '4px'
                 }
             }, 'Legend'),
             div({

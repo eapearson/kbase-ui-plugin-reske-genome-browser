@@ -101,7 +101,8 @@ define([
             div({
                 style: {
                     fontWeight: 'bold',
-                    fontSize: '120%'
+                    fontSize: '120%',
+                    marginBottom: '4px'
                 }
             }, 'Legend'),
             div({

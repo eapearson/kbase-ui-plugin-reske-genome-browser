@@ -1,31 +1,71 @@
-.component-reske-gene-legend table {}
+.component-reske-gene-legend table {
+    width: 100%;
+    margin-bottom: 6px;
+}
 
+.component-reske-gene-legend table tr {
+    border-bottom: rgba(200, 200, 200, 1);
+}
+
+.component-reske-gene-legend table thead tr {
+    background-color: silver;
+    border-bottom: 1px gray solid;
+}
+
+.component-reske-gene-legend table tbody tr:nth-child(1) {
+    border-bottom: none;
+}
+
+.component-reske-gene-legend table tr td {
+    padding: 2px;
+}
+
+.component-reske-gene-legend table tr th {
+    padding: 2px;
+}
+
+.component-reske-gene-legend table tbody tr:hover {
+    background-color: rgba(224, 224, 224, 0.5);
+    cursor: pointer;
+}
+
+.component-reske-gene-legend table tbody tr:hover.-selected {
+    background-color: rgba(224, 224, 224, 1);
+}
+
+.component-reske-gene-legend table tr th:nth-child(1),
 .component-reske-gene-legend table tr td:nth-child(1) {
     width: 5%
 }
 
+
+/* .component-reske-gene-legend table tr td:nth-child(2) {
+    width: 10%
+} */
+
+.component-reske-gene-legend table tr th:nth-child(2),
 .component-reske-gene-legend table tr td:nth-child(2) {
-    width: 10%
+    width: 55%
 }
 
+.component-reske-gene-legend table tr th:nth-child(3),
 .component-reske-gene-legend table tr td:nth-child(3) {
-    width: 30%
+    width: 20%
 }
 
+.component-reske-gene-legend table tr th:nth-child(4),
 .component-reske-gene-legend table tr td:nth-child(4) {
-    width: 35%
-}
-
-.component-reske-gene-legend table tr td:nth-child(5) {
     width: 10%
 }
 
-.component-reske-gene-legend table tr td:nth-child(6) {
+.component-reske-gene-legend table tr th:nth-child(5),
+.component-reske-gene-legend table tr td:nth-child(5) {
     width: 10%
 }
 
 .component-reske-gene-legend table tr th {
     border: none;
     font-weight: normal;
-    font-style: italic;
+    /* font-style: italic; */
+    font-weight: bold;
 }

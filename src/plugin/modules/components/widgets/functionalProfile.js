@@ -17,14 +17,14 @@ define([
         if (!params.vm.termRelations().reference.best_term) {
             return {
                 displayable: false,
-                message: 'Cannot display without reference term'
+                message: 'Cannot display without User term'
             };
         }
 
-        if (params.vm.termRelations().kbase.terms.length === 0) {
+        if (!params.vm.termRelations().kbase.best_term) {
             return {
                 displayable: false,
-                message: 'Cannot display without kbase term'
+                message: 'Cannot display without Orhtolog term'
             };
         }
 
@@ -101,7 +101,8 @@ define([
             div({
                 style: {
                     fontWeight: 'bold',
-                    fontSize: '120%'
+                    fontSize: '120%',
+                    marginBottom: '4px'
                 }
             }, 'Legend'),
             div({

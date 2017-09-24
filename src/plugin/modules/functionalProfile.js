@@ -177,6 +177,12 @@ define([
                         Object.keys(fetchedTermRelations).forEach(function (typeName) {
                             var relationType = fetchedTermRelations[typeName];
                             var typeConfig = widgetConfig.goConfig[typeName];
+
+                            // remove terms for kbase/orthologs -- we don't want to show them amy more.
+                            if (typeName === 'kbase') {
+                                relationType.terms = relationType.terms.slice(0, 1);
+                            }
+
                             relationType.terms = relationType.terms
                                 .map(function (term) {
                                     // filter out bad terms.
