@@ -231,14 +231,20 @@ define([
 
                 td({
                     dataBind: {
-                        numberText: 'term_position',
-                        numberFormat: '"0.00"'
+                        typedText: {
+                            type: '"number"',
+                            value: 'term_position',
+                            format: '"0.00"'
+                        }
                     }
                 }),
                 td({
                     dataBind: {
-                        numberText: 'pvalue',
-                        numberFormat: '"0.0000"'
+                        typedText: {
+                            type: '"number"',
+                            value: 'pvalue',
+                            format: '"0.000"'
+                        }
                     }
                 })
             ]),
