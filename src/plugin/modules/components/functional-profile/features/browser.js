@@ -17,7 +17,6 @@ define([
 
         var height = ko.observable();
         height.subscribe(function (newValue) {
-            console.log('new height', newValue);
             search.availableRowHeight(newValue);
         });
 
@@ -224,6 +223,16 @@ define([
                 flexDirection: 'column'
             }
         }, [
+            div({
+                style: {
+                    position: 'absolute',
+                    top: '0',
+                    right: '0'
+                },
+                dataBind: {
+                    text: 'selectedFeatureGuid'
+                }
+            }),
             div({
                 class: 'kb-flex-table',
                 style: {
