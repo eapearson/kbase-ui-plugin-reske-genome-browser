@@ -17,7 +17,7 @@ define([
 
         // not too comfortable with this...
         var status = ko.pureComputed(function () {
-            if (!params.vm.termRelations()) {
+            if (!params.vm.termRelations() || params.vm.fetchingTermRelations()) {
                 return {
                     loading: true,
                 };
@@ -223,7 +223,7 @@ define([
             }
         }, [
             p([
-                'Loading data. Widget will render when data is available...',
+                'Loading data...',
                 html.loading()
             ])
         ]);

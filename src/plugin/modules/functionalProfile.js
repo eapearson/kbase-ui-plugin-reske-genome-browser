@@ -207,6 +207,13 @@ define([
                         });
 
                         termRelations(fetchedTermRelations);
+                    })
+                    .catch(function (err) {
+                        console.error('ERROR fetching term relations', err);
+                        // TODO: handle!
+                    })
+                    .finally(function () {
+                        fetchingTermRelations(false);
                     });
             }
 
@@ -278,7 +285,8 @@ define([
                 // But there is some value in the top level vm being passed through as a single
                 // property...
                 vm: {
-                    termRelations: termRelations
+                    termRelations: termRelations,
+                    fetchingTermRelations: fetchingTermRelations
                 },
 
                 // ACTIONS

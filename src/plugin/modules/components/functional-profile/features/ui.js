@@ -36,7 +36,11 @@ define([
         };
 
         var availableRowHeight = ko.observable();
-        availableRowHeight(600);
+        // hmm, just to have something, but really, it should be driven from the dom...
+        // but the height is only from inside the browser component, so ... maybe we should just
+        // have the browser component do that
+        // TODO
+        // availableRowHeight(600);
 
         var pageSize = ko.pureComputed(function () {
             var totalHeight = availableRowHeight();
@@ -77,7 +81,6 @@ define([
                             genome_ref: selectedGenome().ref
                         }])
                         .spread(function (featuresList) {
-                            console.log('got...', featuresList);
                             cachedFeatures = featuresList.map(function (item, index) {
                                 item.rowNumber = index;
                                 return item;
@@ -86,15 +89,14 @@ define([
                             return cachedFeatures;
                         });
                 })
-                .then(function (features) {
+                .then(function (allFeatures) {
                     // Fake filtering.
-                    console.log('features', features);
                     var filter = searchInput();
                     if (filter) {
                         isSearching(true);
                         // any substring.
                         var filterRe = new RegExp('.*' + filter + '.*', 'i');
-                        features = features.filter(function (feature) {
+                        allFeatures = allFeatures.filter(function (feature) {
                             return (filterRe.exec(feature.feature_name) ||
                                 filterRe.exec(feature.reference_term_name) ||
                                 filterRe.exec(feature.kbase_term_name) |
@@ -104,7 +106,7 @@ define([
                         });
                     }
 
-                    totalCount(features.length);
+                    totalCount(allFeatures.length);
                     isSearching(false);
 
                     // Fake paging.
@@ -114,9 +116,7 @@ define([
                     firstItem(start + 1);
                     lastItem(end);
 
-                    selectedFeature(features[0]);
-
-                    return features.slice(start, end);
+                    return allFeatures.slice(start, end);
                 });
         }
 
@@ -134,7 +134,7 @@ define([
             isSearching(true);
             fetchFeatures()
                 .then(function (foundFeatures) {
-                    console.log('done?', foundFeatures);
+                    selectedFeature(foundFeatures[0]);
                     features.removeAll();
                     foundFeatures.forEach(function (feature) {
                         features.push(feature);
@@ -149,17 +149,17 @@ define([
                 });
         }
 
-        function start() {
-            return Promise.all([
-                    updateFeatures()
-                ])
-                .spread(function () {})
-                .error(function (err) {
-                    console.error('ERROR syncing data', err);
-                });
-        }
+        // function start() {
+        //     return Promise.all([
+        //             updateFeatures()
+        //         ])
+        //         .spread(function () {})
+        //         .error(function (err) {
+        //             console.error('ERROR syncing data', err);
+        //         });
+        // }
 
-        start();
+        // start();
 
         // TODO: should not need to do this here.
         // How to best wire this together?
