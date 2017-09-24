@@ -19,27 +19,25 @@ define([
         var status = ko.pureComputed(function () {
             if (!params.vm.termRelations()) {
                 return {
-                    displayable: false,
-                    message: 'term relations not ready yet, please select a gene...'
+                    loading: true,
                 };
             }
             if (!params.vm.termRelations().reference.best_term) {
                 return {
-                    displayable: false,
+                    error: true,
                     message: 'Cannot display without reference term'
                 };
             }
 
             if (params.vm.termRelations().kbase.terms.length === 0) {
                 return {
-                    displayable: false,
+                    error: true,
                     message: 'Cannot display without kbase term'
                 };
             }
 
             return {
-                displayable: true,
-                message: ''
+                ready: true
             };
         });
 
@@ -214,13 +212,33 @@ define([
         ]);
     }
 
+    function buildLoading() {
+        return div({
+            style: {
+                margin: '1em',
+                textAlign: 'center',
+                padding: '10px',
+                backgroundColor: 'rgba(224, 224, 224, 0.5)',
+                border: '1px rgba(224, 224, 224, 0.5) solid'
+            }
+        }, [
+            p([
+                'Loading data. Widget will render when data is available...',
+                html.loading()
+            ])
+        ]);
+    }
+
     function template() {
         return div([
-            '<!-- ko if: status().displayable -->',
+            '<!-- ko if: status().ready -->',
             buildDisplay(),
             '<!-- /ko -->',
-            '<!-- ko ifnot: status().displayable -->',
+            '<!-- ko if: status().error -->',
             buildError(),
+            '<!-- /ko -->',
+            '<!-- ko if: status().loading -->',
+            buildLoading(),
             '<!-- /ko -->'
         ]);
     }

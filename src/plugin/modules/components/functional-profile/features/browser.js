@@ -9,7 +9,7 @@ define([
 
     var t = html.tag,
         div = t('div'),
-        span = t('span');
+        p = t('p');
 
     function viewModel(params, componentInfo) {
 
@@ -17,11 +17,20 @@ define([
 
         var height = ko.observable();
         height.subscribe(function (newValue) {
+            console.log('new height', newValue);
             search.availableRowHeight(newValue);
         });
 
         var resizerTimeout = 200;
         var resizerTimer = null;
+
+        function calcHeight() {
+            var tableHeight = componentInfo.element.querySelector('[name="table"]').clientHeight;
+            // TODO: switch to getBoundingClientRect()
+            var headerHeight = componentInfo.element.querySelector('[name="header"]').offsetHeight;
+
+            return tableHeight - headerHeight;
+        }
 
         function resizer() {
             if (resizerTimer) {
@@ -29,11 +38,11 @@ define([
             }
             window.setTimeout(function () {
                 resizerTimer = null;
-                height(componentInfo.element.querySelector('[name="features"]').clientHeight);
+                height(calcHeight());
             }, resizerTimeout);
         }
         window.addEventListener('resize', resizer, false);
-        // height(componentInfo.element.querySelector('[name="features"]').clientHeight);
+        height(calcHeight());
         search.fetchingFeatures.subscribe(function (newValue) {
             if (newValue) {
                 resizer();
@@ -58,44 +67,37 @@ define([
 
     function buildHeader() {
         return div({
-            style: {
-                borderBottom: '1px gray solid',
-                height: '25px',
-                // flex: '1 1 0px',
-                display: 'flex',
-                flexDirection: 'row',
-                backgroundColor: 'silver',
-                // color: 'white'
-            }
+            class: 'kb-flex-table-header kb-flex-table-row',
+            name: 'header'
         }, [
             div({
                 style: {
                     flex: '3 3 30%',
-                    // textAlign: 'center',
                     fontWeight: 'bold'
-                }
-            }, 'gene name'),
+                },
+                class: 'kb-flex-table-cell'
+            }, 'Gene'),
             div({
                 style: {
                     flex: '1 1 10%',
-                    // textAlign: 'center',
                     fontWeight: 'bold'
-                }
-            }, 'dist.'),
+                },
+                class: 'kb-flex-table-cell'
+            }, 'Distance'),
             div({
                 style: {
                     flex: '3 3 30%',
-                    // textAlign: 'center',
                     fontWeight: 'bold'
-                }
-            }, 'ref term'),
+                },
+                class: 'kb-flex-table-cell'
+            }, 'User term'),
             div({
                 style: {
                     flex: '3 3 30%',
-                    // textAlign: 'center',
                     fontWeight: 'bold'
-                }
-            }, 'kbase term'),
+                },
+                class: 'kb-flex-table-cell'
+            }, 'Ortholog term'),
         ]);
     }
 
@@ -107,21 +109,13 @@ define([
                     '-selected': 'feature_guid === $component.selectedFeatureGuid()'
                 }
             },
-            class: '-row',
-            style: {
-                borderBottom: '1px gray solid',
-                height: '50px',
-                // flex: '1 1 0px',
-                display: 'flex',
-                flexDirection: 'row',
-                overflowX: 'hidden',
-                minWidth: '0'
-            }
+            class: 'kb-flex-table-row'
         }, [
             div({
                 dataBind: {
                     text: 'feature_name'
                 },
+                class: 'kb-flex-table-cell',
                 style: {
                     flex: '3 3 30%'
                 },
@@ -131,17 +125,15 @@ define([
                     numberText: 'distance',
                     numberFormat: '"0.00"'
                 },
+                class: 'kb-flex-table-cell',
                 style: {
                     flex: '1 1 10%'
                 }
             }),
             div({
+                class: 'kb-flex-table-cell',
                 style: {
-                    flex: '3 3 30%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflowX: 'hidden',
-                    minWidth: '0'
+                    flex: '3 3 30%'
                 }
             }, [
                 div({
@@ -167,12 +159,9 @@ define([
                 })
             ]),
             div({
+                class: 'kb-flex-table-cell',
                 style: {
-                    flex: '3 3 30%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflowX: 'hidden',
-                    minWidth: '0'
+                    flex: '3 3 30%'
                 }
             }, [
                 div({
@@ -209,6 +198,23 @@ define([
         });
     }
 
+    function buildLoading() {
+        return div({
+            style: {
+                // margin: '1em',
+                textAlign: 'center',
+                padding: '10px',
+                backgroundColor: 'rgba(224, 224, 224, 0.5)',
+                border: '1px rgba(224, 224, 224, 0.5) solid'
+            }
+        }, [
+            p([
+                'Loading genes...',
+                html.loading()
+            ])
+        ]);
+    }
+
     function template() {
         return div({
             class: 'reske_functional-profile_features_browser',
@@ -216,28 +222,38 @@ define([
                 flex: '1 1 0px',
                 display: 'flex',
                 flexDirection: 'column'
-            },
-            name: 'features'
+            }
         }, [
-            buildHeader(),
-            '<!-- ko if: search.fetchingFeatures -->',
-            html.loading(),
-            '<!-- /ko -->',
-            '<!-- ko ifnot: search.fetchingFeatures -->',
             div({
-                dataBind: {
-                    foreach: 'search.features'
-                },
+                class: 'kb-flex-table',
                 style: {
                     flex: '1 1 0px',
                     display: 'flex',
                     flexDirection: 'column'
-                }
-            }, buildRow()),
-            '<!-- /ko -->',
-            '<!-- ko if: search.error -->',
-            buildError(),
-            '<!-- /ko -->'
+                },
+                name: 'table'
+            }, [
+                buildHeader(),
+                '<!-- ko if: search.fetchingFeatures -->',
+                buildLoading(),
+                '<!-- /ko -->',
+                '<!-- ko ifnot: search.fetchingFeatures -->',
+                div({
+                    dataBind: {
+                        foreach: 'search.features'
+                    },
+                    style: {
+                        flex: '1 1 0px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    },
+                    name: 'features'
+                }, buildRow()),
+                '<!-- /ko -->',
+                '<!-- ko if: search.error -->',
+                buildError(),
+                '<!-- /ko -->'
+            ])
         ]);
         // var container = document.createElement('div');
         // container.innerHTML = markup;

@@ -245,7 +245,8 @@ define([
             style: {
                 width: '100%',
                 border: 'none',
-                height: '23px'
+                height: '23px',
+                backgroundColor: 'rgba(224, 224, 224, 0.5)'
             },
 
         });

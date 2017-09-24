@@ -131,6 +131,7 @@ define([
         ]);
     }
 
+
     function template() {
         return div([
             '<!-- ko if: displayable -->',

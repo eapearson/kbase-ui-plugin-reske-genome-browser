@@ -1,17 +1,45 @@
 .reske_functional-profile_features_browser {}
 
-.reske_functional-profile_features_browser .-row {
-    cursor: pointer
+.kb-flex-table .kb-flex-table-row {
+    cursor: pointer;
+    border-bottom: 1px gray solid;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: hidden;
+    min-width: 0
 }
 
-.reske_functional-profile_features_browser .-row:hover {
+.kb-flex-table .kb-flex-table-row:hover {
     background-color: rgba(224, 224, 224, 0.5);
 }
 
-.reske_functional-profile_features_browser .-row.-selected {
+.rkb-flex-table .kb-flex-table-row.-selected {
     background-color: rgba(224, 224, 224, 1);
 }
 
-.reske_functional-profile_features_browser .-row.-selected:hover {
+.kb-flex-table .kb-flex-table-row.-selected:hover {
     background-color: rgba(224, 224, 224, 0.5);
+}
+
+.kb-flex-table .kb-flex-table-row.-selected:active {
+    background-color: rgba(224, 224, 224, 1);
+    color: white;
+}
+
+.kb-flex-table .kb-flex-table-row {
+    overflow-x: hidden;
+}
+
+.kb-flex-table .kb-flex-table-row.kb-flex-table-header {
+    height: 25px;
+    background-color: silver
+}
+
+.kb-flex-table .kb-flex-table-row .kb-flex-table-cell {
+    padding: 2px;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
 }
