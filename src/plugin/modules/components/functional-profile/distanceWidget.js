@@ -70,7 +70,7 @@ define([
                     description: 'The reference term'
                 },
                 kbase: {
-                    label: 'Ortholog',
+                    label: 'Inferred',
                     radial: {
                         length: 80,
                         width: 5
@@ -78,7 +78,7 @@ define([
                     // orange
                     color: [249, 124, 0],
                     alpha: 0.5,
-                    description: 'The Ortholog term'
+                    description: 'The Inferred term'
                 },
                 fitness: {
                     label: 'Fitness',

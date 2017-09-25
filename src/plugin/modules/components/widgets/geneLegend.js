@@ -257,7 +257,7 @@ define([
             buildJustHeader(),
             '<!-- ko with: vm.termRelations -->',
             buildUserTerm('User', 'reference'),
-            buildTerms('Ortholog', 'kbase'),
+            buildTerms('Inferred', 'kbase'),
             buildTerms('Fitness', 'fitness'),
             buildTerms('Expression', 'expression'),
             '<!-- /ko -->'

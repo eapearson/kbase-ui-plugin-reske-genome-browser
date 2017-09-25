@@ -96,7 +96,7 @@ define([
                     fontWeight: 'bold'
                 },
                 class: 'kb-flex-table-cell'
-            }, 'Ortholog term'),
+            }, 'Inferred term'),
         ]);
     }
 
