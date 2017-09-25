@@ -356,15 +356,7 @@ define([
             //     margin: '10px'
             // }
         }, [
-            komponent({
-                name: 'reske/widget/circle',
-                params: {
-                    x: 'center.x',
-                    y: 'center.y',
-                    radius: 'center.radius',
-                    color: 'center.color'
-                }
-            }),
+
             komponent({
                 name: 'reske/widget/line',
                 params: {
@@ -403,7 +395,15 @@ define([
                 }
             }),
             '<!-- /ko -->',
-
+            komponent({
+                name: 'reske/widget/circle',
+                params: {
+                    x: 'center.x',
+                    y: 'center.y',
+                    radius: 'center.radius',
+                    color: 'center.color'
+                }
+            })
             // '<!-- ko if: info.text() -->',
             // text({
             //     dataBind: {
