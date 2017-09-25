@@ -72,7 +72,7 @@ define([
 
         var widgetConfig = {
             width: 200,
-            height: 200,
+            height: 110,
             scale: 1.5,
             x: 100,
             y: 100,
@@ -380,17 +380,25 @@ define([
                             flex: '1 1 0px',
                             overflowY: 'auto'
                         }
-                    }, div({
-                        dataBind: {
-                            component: {
-                                name: '"reske/functional-profile/distance-widget"',
-                                params: {
-                                    runtime: 'runtime',
-                                    vm: 'vm'
-                                }
-                            }
+                    }, komponent({
+                        name: 'reske/functional-profile/distance-widget',
+                        params: {
+                            runtime: 'runtime',
+                            vm: 'vm'
                         }
                     }))
+
+                    // div({
+                    //     dataBind: {
+                    //         component: {
+                    //             name: '"reske/functional-profile/distance-widget"',
+                    //             params: {
+                    //                 runtime: 'runtime',
+                    //                 vm: 'vm'
+                    //             }
+                    //         }
+                    //     }
+                    // }))
                 ])
             ]);
         }

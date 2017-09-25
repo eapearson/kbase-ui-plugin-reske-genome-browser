@@ -98,6 +98,18 @@ define(['knockout-plus', 'numeral', 'kb_common/html'], function (
                 radial.showTooltip(false);
             }
 
+            // var stroke;
+            // var strokeWidth;
+            // if (params.highlight) {
+            //     stroke = 'red';
+            //     strokeWidth = 1;
+            // } else {
+            var stroke = radial.color;
+            var strokeWidth = radial.width;
+            // }
+
+
+
             // var label = radial.label +
             //     ' (' +
             //     numeral(angle + 0.25).format('0.00') +
@@ -107,8 +119,8 @@ define(['knockout-plus', 'numeral', 'kb_common/html'], function (
                 y1: radial.y,
                 x2: x2,
                 y2: y2,
-                stroke: radial.color,
-                strokeWidth: radial.width,
+                stroke: stroke,
+                strokeWidth: strokeWidth,
                 label: radial.label,
                 xLabel: xLabel,
                 yLabel: yLabel,

@@ -45,7 +45,7 @@ define([
             x: 100,
             y: 100,
             width: 200,
-            height: 200,
+            height: 110,
             scale: 1.5,
             fontFamily: 'monospace',
             fontSize: 12,
@@ -66,6 +66,7 @@ define([
                     },
                     // black
                     color: [100, 100, 100],
+                    alpha: 0.5,
                     description: 'The reference term'
                 },
                 kbase: {
@@ -76,6 +77,7 @@ define([
                     },
                     // orange
                     color: [249, 124, 0],
+                    alpha: 0.5,
                     description: 'The Ortholog term'
                 },
                 fitness: {
@@ -93,15 +95,34 @@ define([
             }
         };
 
-        var tooltipVm = {
-            tooltip: ko.observable()
+        var legend = [{
+                color: config.goConfig.reference.color,
+                label: config.goConfig.reference.label
+            },
+            {
+                color: config.goConfig.kbase.color,
+                label: config.goConfig.kbase.label
+            },
+            {
+                color: config.goConfig.fitness.color,
+                label: config.goConfig.fitness.label
+            },
+            {
+                color: config.goConfig.expression.color,
+                label: config.goConfig.expression.label
+            }
+        ];
+
+        var ui = {
+            tooltip: ko.observable(),
+            legend: legend
         };
 
         return {
             status: status,
             config: config,
             vm: params.vm,
-            tooltipVm: tooltipVm
+            ui: ui
         };
     }
 
@@ -141,7 +162,98 @@ define([
         ]);
     }
 
+    function komponent(componentDef) {
+        return '<!-- ko component: {name: "' + componentDef.name +
+            '", params: {' +
+            Object.keys(componentDef.params).map(function (key) {
+                return key + ':' + componentDef.params[key];
+            }).join(',') + '}}--><!-- /ko -->';
+    }
+
+    function buildWidget() {
+        return div({
+            style: {
+                display: 'flex',
+                flex: '1 1 0px',
+                flexDirection: 'row'
+            }
+        }, [
+            div({
+                style: {
+                    flex: '1 1 0px'
+                }
+            }, div({
+                dataBind: {
+                    component: {
+                        name: '"reske/gene/speedometer"',
+                        params: {
+                            config: 'config',
+                            vm: 'vm',
+                            ui: 'ui'
+                        }
+                    }
+                }
+            })),
+            div({
+                style: {
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    alignItems: 'flex-end'
+                }
+            }, div({
+                dataBind: {
+                    component: {
+                        name: '"reske/functional-profile/distance-widget-details"',
+                        params: {
+                            config: 'config',
+                            vm: 'vm',
+                            ui: 'ui'
+                        }
+                    }
+                }
+            }))
+        ]);
+    }
+
     function buildDisplay() {
+        return div({
+            style: {
+                // display: 'flex',
+                // flexDirection: 'column',
+                flex: '1 1 0px'
+            }
+        }, [
+            buildWidget(),
+            // Legend row.
+            div({
+                style: {
+                    flex: '1 1 0px',
+                    padding: '8px'
+                }
+            }, [
+                div({
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '120%',
+                        marginBottom: '4px',
+                    }
+                }, 'Legend'),
+                div({
+                    dataBind: {
+                        component: {
+                            name: '"reske/gene/legend"',
+                            params: {
+                                config: 'config',
+                                vm: 'vm'
+                            }
+                        }
+                    }
+                })
+            ])
+        ]);
+    }
+
+    function buildDisplayx() {
         return div({
             class: 'container-fluid'
         }, [
@@ -157,7 +269,7 @@ define([
                             params: {
                                 config: 'config',
                                 vm: 'vm',
-                                tooltipVm: 'tooltipVm'
+                                ui: 'ui'
                             }
                         }
                     }
@@ -165,17 +277,27 @@ define([
                 div({
                     class: 'col-sm-6'
                 }, div({
+                    style: {
+                        height: '170px',
+                        position: 'relative'
+                    }
+                }, div({
                     dataBind: {
                         component: {
                             name: '"reske/functional-profile/distance-widget-details"',
                             params: {
                                 config: 'config',
                                 vm: 'vm',
-                                tooltipVm: 'tooltipVm'
+                                ui: 'ui'
                             }
                         }
+                    },
+                    style: {
+                        position: 'absolute',
+                        bottom: '0',
+
                     }
-                }))
+                })))
             ]),
             div({
                 style: {
@@ -233,7 +355,13 @@ define([
     }
 
     function template() {
-        return div([
+        return div({
+            style: {
+                flex: '1 1 0px',
+                display: 'flex',
+                flexDirection: 'column'
+            }
+        }, [
             '<!-- ko if: status().ready -->',
             buildDisplay(),
             '<!-- /ko -->',

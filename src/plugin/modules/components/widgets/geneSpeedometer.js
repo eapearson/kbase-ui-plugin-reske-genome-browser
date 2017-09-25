@@ -43,7 +43,7 @@ define([
 
     // STRUCTURE MAKERS
 
-    function makeRadial(config, data, uiVm, path) {
+    function makeRadial(config, data, ui, path) {
         var typeData = getProp(data, path).best_term;
         var typeConfig = getProp(config.goConfig, path);
         if (!typeData) {
@@ -58,11 +58,11 @@ define([
         };
         showTooltip.subscribe(function () {
             if (showTooltip()) {
-                uiVm.tooltip({
+                ui.tooltip({
                     data: tooltipData
                 });
             } else {
-                uiVm.tooltip(null);
+                ui.tooltip(null);
             }
         });
         var radial = {
@@ -84,13 +84,13 @@ define([
         return radial;
     }
 
-    function makeSemiRadial(config, data, uiVm, path) {
+    function makeSemiRadial(config, data, ui, path) {
         var typeData = getProp(data, path).best_term;
         var typeConfig = getProp(config.goConfig, path);
         if (!typeData) {
             return;
         }
-        var color = makeColor(typeConfig.color, 1);
+        var color = makeColor(typeConfig.color, typeConfig.alpha || 1);
         var showTooltip = ko.observable(false);
         // The data to show in the tooltip when needed.
         var tooltipData = {
@@ -99,11 +99,11 @@ define([
         };
         showTooltip.subscribe(function () {
             if (showTooltip()) {
-                uiVm.tooltip({
+                ui.tooltip({
                     data: tooltipData
                 });
             } else {
-                uiVm.tooltip(null);
+                ui.tooltip(null);
             }
         });
         var radial = {
@@ -170,7 +170,7 @@ define([
         };
     }
 
-    function makeTypeSemiTicks(config, data, uiVm, path, index) {
+    function makeTypeSemiTicks(config, data, ui, path, index) {
         var typeData = getProp(data, path);
         var typeConfig = getProp(config.goConfig, path);
 
@@ -189,11 +189,11 @@ define([
             };
             showTooltip.subscribe(function () {
                 if (showTooltip()) {
-                    uiVm.tooltip({
+                    ui.tooltip({
                         data: tooltipData
                     });
                 } else {
-                    uiVm.tooltip(null);
+                    ui.tooltip(null);
                 }
             });
             var tick = {
@@ -213,7 +213,7 @@ define([
         });
     }
 
-    function makeTypeTicks(config, data, uiVm, path, index) {
+    function makeTypeTicks(config, data, ui, path, index) {
         var typeData = getProp(data, path);
         var typeConfig = getProp(config.goConfig, path);
 
@@ -232,11 +232,11 @@ define([
             };
             showTooltip.subscribe(function () {
                 if (showTooltip()) {
-                    uiVm.tooltip({
+                    ui.tooltip({
                         data: tooltipData
                     });
                 } else {
-                    uiVm.tooltip(null);
+                    ui.tooltip(null);
                 }
             });
             var tick = {
@@ -267,7 +267,7 @@ define([
             y1: y1,
             x2: x2,
             y2: y2,
-            width: 2,
+            width: 1,
             color: 'silver'
         };
     }
@@ -295,18 +295,18 @@ define([
             var rotation = data.reference.best_term.term_position;
             config.offset = rotation;
             // var tooltipData = ko.observable(null);
-            var uiVm = {
-                tooltip: params.tooltipVm.tooltip
+            var ui = {
+                tooltip: params.ui.tooltip
             };
             var it = {
                 error: error,
                 config: config,
                 radials: {
                     kbase: {
-                        radial: makeSemiRadial(config, data, uiVm, 'kbase')
+                        radial: makeSemiRadial(config, data, ui, 'kbase')
                     },
                     community: {
-                        radial: makeSemiRadial(config, data, uiVm, 'reference')
+                        radial: makeSemiRadial(config, data, ui, 'reference')
                     }
                 },
                 rings: config.ringLayout
@@ -318,7 +318,7 @@ define([
                     }),
                 ticks: config.ringLayout
                     .reduce(function (accum, type, index) {
-                        return accum.concat(makeTypeSemiTicks(config, data, uiVm, type, index));
+                        return accum.concat(makeTypeSemiTicks(config, data, ui, type, index));
                     }, [])
                     .filter(function (ticks) {
                         return ticks ? true : false;
@@ -343,14 +343,19 @@ define([
         return svg({
             dataBind: {
                 style: {
-                    width: 'config.width * config.scale',
-                    height: 'config.height * config.scale',
+                    // width: 'config.width'
+                    // width: 'config.width * config.scale',
+                    // height: 'config.height * config.scale',
+                    preserveAspectRatio: '"xMidYMid meet"'
 
                 },
                 attr: {
                     viewBox: '"0 0 " + config.width + " " + config.height'
                 }
             },
+            style: {
+                width: '100%'
+            }
             // style: {
             //     outline: '1px silver solid',
             //     margin: '10px'

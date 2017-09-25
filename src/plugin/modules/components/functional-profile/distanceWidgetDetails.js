@@ -14,18 +14,8 @@ define([
 
 
     function viewModel(params) {
-
-        var miniLegend = [{
-            color: 'red',
-            label: 'Red'
-        }, {
-            color: 'blue',
-            label: 'Blue'
-        }];
-
         return {
-            vm: params.tooltipVm,
-            miniLegend: miniLegend
+            legend: params.ui.legend
         };
     }
 
@@ -88,7 +78,7 @@ define([
     function buildMiniLegend() {
         return table({
             dataBind: {
-                foreach: 'miniLegend'
+                foreach: 'legend'
             },
             class: '-mini-legend'
         }, [
@@ -96,7 +86,7 @@ define([
                 td(div({
                     dataBind: {
                         style: {
-                            'background-color': 'color'
+                            'background-color': '"rgb(" + color.join(",") + ")"'
                         }
                     },
                     style: {
@@ -107,9 +97,6 @@ define([
                 td({
                     dataBind: {
                         text: 'label'
-                    },
-                    style: {
-
                     }
                 })
             ])
@@ -120,21 +107,21 @@ define([
         return div({
             class: 'reske_functional-profile_distance-widget-details'
         }, [
-            div({
-                style: {
-                    height: '250px',
-                    border: '1px silver solid',
-                    padding: '4px'
-                }
-            }, [
-                '<!-- ko if: vm.tooltip() -->',
-                buildTooltip(),
-                '<!-- /ko -->',
-                '<!-- ko ifnot: vm.tooltip() -->',
-                'Hover over a chart item to see details',
-                '<!-- /ko -->'
-            ]),
-            // buildMiniLegend()
+            // div({
+            //     style: {
+            //         height: '250px',
+            //         border: '1px silver solid',
+            //         padding: '4px'
+            //     }
+            // }, [
+            //     '<!-- ko if: vm.tooltip() -->',
+            //     buildTooltip(),
+            //     '<!-- /ko -->',
+            //     '<!-- ko ifnot: vm.tooltip() -->',
+            //     'Hover over a chart item to see details',
+            //     '<!-- /ko -->'
+            // ]),
+            buildMiniLegend()
         ]);
     }
 
