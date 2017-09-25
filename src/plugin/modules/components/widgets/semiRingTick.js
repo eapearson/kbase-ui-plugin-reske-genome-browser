@@ -57,15 +57,11 @@ define([
         });
 
         function doMouseOver() {
-            if (tick.showTooltip) {
-                tick.showTooltip(true);
-            }
+            tick.showTooltip(true);
         }
 
         function doMouseOut() {
-            if (tick.showTooltip) {
-                tick.showTooltip(false);
-            }
+            tick.showTooltip(false);
         }
 
         return {

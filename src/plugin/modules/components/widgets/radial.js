@@ -45,7 +45,8 @@ define(['knockout-plus', 'numeral', 'kb_common/html'], function (
             var y2 = radial.y + radial.length * Math.sin(angle * 2 * Math.PI);
 
             // THe label
-            if (radial.label() !== undefined && radial.label().length > 0) {
+            var label = unwrap(radial.label);
+            if (label !== undefined && label.length > 0) {
                 var xLabel, yLabel, textFilter;
                 switch (radial.labelStyle) {
                 case 'radial':

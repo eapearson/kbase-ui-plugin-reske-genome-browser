@@ -42,14 +42,15 @@ define([
         });
 
         var config = {
-            x: 150,
-            y: 150,
-            width: 300,
-            height: 300,
+            x: 100,
+            y: 100,
+            width: 200,
+            height: 200,
+            scale: 1.5,
             fontFamily: 'monospace',
             fontSize: 12,
-            radius: 80,
-            minRadius: 30,
+            radius: 100,
+            minRadius: 50,
             ringWidth: 10,
             sectorCount: ko.observable(5),
             tickTheta: 0.05,
@@ -64,13 +65,13 @@ define([
                         width: 5
                     },
                     // black
-                    color: [0, 0, 0],
+                    color: [100, 100, 100],
                     description: 'The reference term'
                 },
                 kbase: {
                     label: 'Ortholog',
                     radial: {
-                        length: 100,
+                        length: 80,
                         width: 5
                     },
                     // orange
@@ -111,7 +112,7 @@ define([
             div({
                 dataBind: {
                     component: {
-                        name: '"reske/gene/dial"',
+                        name: '"reske/gene/speedometer"',
                         params: {
                             config: 'config',
                             vm: 'vm'
@@ -152,7 +153,7 @@ define([
                 }, div({
                     dataBind: {
                         component: {
-                            name: '"reske/gene/dial"',
+                            name: '"reske/gene/speedometer"',
                             params: {
                                 config: 'config',
                                 vm: 'vm',

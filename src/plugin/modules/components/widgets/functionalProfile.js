@@ -51,7 +51,7 @@ define([
                         width: 5
                     },
                     // black
-                    color: [0, 0, 0],
+                    color: [100, 100, 100],
                     description: 'The reference term'
                 },
                 kbase: {

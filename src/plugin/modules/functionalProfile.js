@@ -71,13 +71,16 @@ define([
         });
 
         var widgetConfig = {
-            x: 150,
-            y: 150,
+            width: 200,
+            height: 200,
+            scale: 1.5,
+            x: 100,
+            y: 100,
             fontFamily: 'sans serif',
             fontSize: 11,
-            radius: 80,
+            radius: 50,
             minRadius: 50,
-            radialLength: 100,
+            radialLength: 70,
             ringWidth: 10,
             sectorCount: ko.observable(5),
             tickTheta: 0.05,

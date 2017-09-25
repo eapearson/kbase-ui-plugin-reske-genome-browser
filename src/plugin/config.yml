@@ -30,6 +30,10 @@ install:
       module: clockTester
       type: factory
     -
+      id: kb_reskeGenomeBrowser_speedometerTester
+      module: speedometerTester
+      type: factory      
+    -
       id: kb_reskeGenomeBrowser_functionalProfile
       module: functionalProfile
       type: factory
@@ -128,8 +132,16 @@ install:
       module: components/widgets/circle
       css: false
     -
+      name: reske/widget/line
+      module: components/widgets/line
+      css: false
+    -
       name: reske/widget/ring
       module: components/widgets/ring
+      css: false
+    -
+      name: reske/widget/semiRing
+      module: components/widgets/semiRing
       css: false
     -
       name: reske/widget/ringTick
@@ -138,6 +150,10 @@ install:
     -
       name: reske/gene/dial
       module: components/widgets/geneDial
+      css: false      
+    -
+      name: reske/gene/speedometer
+      module: components/widgets/geneSpeedometer
       css: false
     -
       name: reske/gene/legend
@@ -177,6 +193,13 @@ install:
         - clock
       widget: kb_reskeGenomeBrowser_clockTester
       authorization: true
+    -
+      path:
+        - reske
+        - test
+        - speedometer
+      widget: kb_reskeGenomeBrowser_speedometerTester
+      authorization: true      
     -
       path: 
         - reske

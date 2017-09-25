@@ -2,7 +2,7 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/html'
-], function(
+], function (
     ko,
     numeral,
     html
@@ -124,7 +124,7 @@ define([
     }
 
     function GeneViewer(arg) {
-        var rings = ['community', 'kbase', 'expression', 'fitness'].map(function(termType, index) {
+        var rings = ['community', 'kbase', 'expression', 'fitness'].map(function (termType, index) {
             return buildRingAndTick(termType, index);
         });
 
@@ -178,7 +178,7 @@ define([
             // strokeWidth: 4
         });
 
-        var lines = ['community', 'kbase', 'expression', 'fitness'].map(function(termType, index) {
+        var lines = ['community', 'kbase', 'expression', 'fitness'].map(function (termType, index) {
             return [
                 '<!-- ko with: termRelations.' + termType + '-->',
                 rect({
@@ -290,7 +290,7 @@ define([
             centerRadius: 5,
             termRelations: {
                 community: {
-                    color: 'black',
+                    color: 'gray',
                     tickColor: 'silver',
                     label: 'Community'
                 },
@@ -314,7 +314,7 @@ define([
 
         function updateMap() {
             var temp = {};
-            params.vm.termRelations().forEach(function(relation) {
+            params.vm.termRelations().forEach(function (relation) {
                 temp[relation.relation_type] = relation;
             });
             termRelationsMap(temp);
@@ -409,7 +409,7 @@ define([
                 termRelations: {}
             };
 
-            ['community', 'kbase', 'expression', 'fitness'].map(function(termType, index) {
+            ['community', 'kbase', 'expression', 'fitness'].map(function (termType, index) {
                 var termRelation = termRelationsMap()[termType];
                 var termConfig = config.termRelations[termType];
                 var xBase = xLegend + legendBoxLeftPadding;
@@ -455,11 +455,11 @@ define([
 
         var legend = ko.observable(makeLegend());
 
-        params.vm.termRelations.subscribe(function() {
+        params.vm.termRelations.subscribe(function () {
             updateMap();
             arg2.radials.community(makeRadial('community'));
             arg2.radials.kbase(makeRadial('kbase'));
-            ['community', 'kbase', 'expression', 'fitness'].forEach(function(termType, index) {
+            ['community', 'kbase', 'expression', 'fitness'].forEach(function (termType, index) {
                 arg2.termTypes[termType](makeRingWithTick(termType, index));
             });
             legend(makeLegend());

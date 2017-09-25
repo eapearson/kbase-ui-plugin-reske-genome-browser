@@ -84,6 +84,48 @@ define([
         return radial;
     }
 
+    function makeSemiRadial(config, data, uiVm, path) {
+        var typeData = getProp(data, path).best_term;
+        var typeConfig = getProp(config.goConfig, path);
+        if (!typeData) {
+            return;
+        }
+        var color = makeColor(typeConfig.color, 1);
+        var showTooltip = ko.observable(false);
+        // The data to show in the tooltip when needed.
+        var tooltipData = {
+            type: typeConfig.label,
+            term: typeData,
+        };
+        showTooltip.subscribe(function () {
+            if (showTooltip()) {
+                uiVm.tooltip({
+                    data: tooltipData
+                });
+            } else {
+                uiVm.tooltip(null);
+            }
+        });
+        var radial = {
+            // for the radial 
+            x: config.x,
+            y: config.y,
+            // scale to 1/2 for semicircle, offset 1/4 to move to left.
+            angle: 0.5 * typeData.term_position - (config.offset || 0) - 0.25,
+            length: typeConfig.radial.length,
+            width: typeConfig.radial.width || config.radialWidth,
+            color: color,
+            // for the label 
+            fontFamily: config.fontFamily,
+            fontSize: config.fontSize,
+            // label: ko.observable(typeConfig.label),
+            // for toolip / mouseover
+            description: typeConfig.description + ' (' + numeral(typeData.term_position).format('0.00') + ')',
+            showTooltip: showTooltip
+        };
+        return radial;
+    }
+
     function makeTypeRing(config, data, path, index) {
         var radius = config.minRadius + config.ringWidth * index;
 
@@ -104,6 +146,71 @@ define([
                 }
             }
         };
+    }
+
+    function makeTypeSemiRing(config, data, path, index) {
+        var radius = config.minRadius + config.ringWidth * index;
+
+        // Note, rings don't even use data.
+        // Note: this design, building rings purely on the position of the 
+        // ring in the configuration, implies that we build rings even if there
+        // is no data for the ring, which we don't discover here because we
+        // don't inspect the data at all.
+        return {
+            ring: {
+                x: config.x,
+                y: config.y,
+                radius: radius,
+                width: config.ringWidth,
+                border: {
+                    color: 'silver',
+                    width: 1
+                }
+            }
+        };
+    }
+
+    function makeTypeSemiTicks(config, data, uiVm, path, index) {
+        var typeData = getProp(data, path);
+        var typeConfig = getProp(config.goConfig, path);
+
+        if (!typeData) {
+            return [];
+        }
+
+        return typeData.terms.map(function (termData) {
+            var radius = config.minRadius + config.ringWidth * index;
+            // try thihs...
+            var theta = (config.tickLength / (2 * Math.PI * radius));
+            var showTooltip = ko.observable(false);
+            var tooltipData = {
+                type: typeConfig.label,
+                term: termData,
+            };
+            showTooltip.subscribe(function () {
+                if (showTooltip()) {
+                    uiVm.tooltip({
+                        data: tooltipData
+                    });
+                } else {
+                    uiVm.tooltip(null);
+                }
+            });
+            var tick = {
+                x: config.x,
+                y: config.y,
+                start: 0.5 * termData.term_position - (config.offset || 0) - (theta / 2) - 0.25,
+                // theta: config.tickTheta,
+                theta: theta,
+                radius: radius,
+                width: config.ringWidth,
+                color: termData.color,
+                showTooltip: showTooltip
+            };
+            return {
+                tick: tick
+            };
+        });
     }
 
     function makeTypeTicks(config, data, uiVm, path, index) {
@@ -149,6 +256,22 @@ define([
         });
     }
 
+    function makeBase(config, it) {
+        // console.log('base', config.minRadius, it.rings.length, config.ringWidth);
+        var x1 = config.x - config.minRadius - it.rings.length * config.ringWidth;
+        var y1 = config.y;
+        var x2 = config.x + config.minRadius + it.rings.length * config.ringWidth;
+        var y2 = config.y;
+        return {
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            width: 2,
+            color: 'silver'
+        };
+    }
+
     // VIEWMODEL
 
     function viewModel(params) {
@@ -175,27 +298,27 @@ define([
             var uiVm = {
                 tooltip: params.tooltipVm.tooltip
             };
-            return {
+            var it = {
                 error: error,
                 config: config,
                 radials: {
                     kbase: {
-                        radial: makeRadial(config, data, uiVm, 'kbase')
+                        radial: makeSemiRadial(config, data, uiVm, 'kbase')
                     },
                     community: {
-                        radial: makeRadial(config, data, uiVm, 'reference')
+                        radial: makeSemiRadial(config, data, uiVm, 'reference')
                     }
                 },
                 rings: config.ringLayout
                     .reduce(function (accum, type, index) {
-                        return accum.concat(makeTypeRing(config, data, type, index));
+                        return accum.concat(makeTypeSemiRing(config, data, type, index));
                     }, [])
                     .filter(function (ring) {
                         return ring ? true : false;
                     }),
                 ticks: config.ringLayout
                     .reduce(function (accum, type, index) {
-                        return accum.concat(makeTypeTicks(config, data, uiVm, type, index));
+                        return accum.concat(makeTypeSemiTicks(config, data, uiVm, type, index));
                     }, [])
                     .filter(function (ticks) {
                         return ticks ? true : false;
@@ -204,9 +327,11 @@ define([
                     x: config.x,
                     y: config.y,
                     radius: 6,
-                    color: 'black'
+                    color: 'silver'
                 }
             };
+            it.base = makeBase(config, it);
+            return it;
         });
 
         return {
@@ -231,9 +356,24 @@ define([
             //     margin: '10px'
             // }
         }, [
+            komponent({
+                name: 'reske/widget/circle',
+                params: {
+                    x: 'center.x',
+                    y: 'center.y',
+                    radius: 'center.radius',
+                    color: 'center.color'
+                }
+            }),
+            komponent({
+                name: 'reske/widget/line',
+                params: {
+                    line: 'base'
+                }
+            }),
             '<!-- ko foreach: rings -->',
             komponent({
-                name: 'reske/widget/ring',
+                name: 'reske/widget/semiRing',
                 params: {
                     ring: 'ring'
                 }
@@ -263,15 +403,7 @@ define([
                 }
             }),
             '<!-- /ko -->',
-            komponent({
-                name: 'reske/widget/circle',
-                params: {
-                    x: 'center.x',
-                    y: 'center.y',
-                    radius: 'center.radius',
-                    color: 'center.color'
-                }
-            }),
+
             // '<!-- ko if: info.text() -->',
             // text({
             //     dataBind: {
