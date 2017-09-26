@@ -136,6 +136,10 @@ install:
       module: components/widgets/line
       css: false
     -
+      name: reske/widget/text
+      module: components/widgets/text
+      css: false      
+    -
       name: reske/widget/ring
       module: components/widgets/ring
       css: false

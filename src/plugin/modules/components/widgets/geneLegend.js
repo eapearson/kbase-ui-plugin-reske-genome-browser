@@ -44,7 +44,7 @@ define([
                     textAlign: 'center',
                     marginBottom: '10px'
                 }
-            }, 'sorry, no data for this type'),
+            }, 'no ' + type + ' data available'),
             '<!-- /ko -->'
         ];
 

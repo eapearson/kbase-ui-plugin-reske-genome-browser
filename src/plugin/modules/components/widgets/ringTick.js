@@ -10,6 +10,7 @@ define([
     'use strict';
 
     var t = html.tag,
+        text = t('text'),
         path = t('path');
 
     var unwrap = ko.utils.unwrapObservable;
@@ -17,7 +18,7 @@ define([
     function viewModel(params) {
         var tick = params.tick;
 
-        var pathParts = ko.pureComputed(function () {
+        var vm = ko.pureComputed(function () {
             var innerRadius = tick.radius;
             var outerRadius = tick.radius + tick.width;
             var startAngle = unwrap(tick.start) - 0.25;
@@ -46,7 +47,7 @@ define([
                 largeArc = 0;
             }
 
-            return [
+            var pathParts = [
                 // 'M', tick.x, tick.y, // place in center
                 'M', xBeginInner, yBeginInner, // move to inner ring without drawing.
                 'L', xBeginOuter, yBeginOuter, // draw line for the right side of the arc segment.
@@ -54,7 +55,53 @@ define([
                 'L', xEndInner, yEndInner, // left side line
                 'A', innerRadius, innerRadius, 0, largeArc, 0, xBeginInner, yBeginInner
             ].join(' ');
+
+            var labelOffset = 5;
+
+            var label;
+            // console.log('label?', params);
+            if (params.label) {
+                // console.log('label', label);
+                var xLabel = tick.x + (outerRadius + params.label.offset) * Math.cos(startAngle * 2 * Math.PI);
+                var yLabel = tick.y + (outerRadius + params.label.offset) * Math.sin(startAngle * 2 * Math.PI);
+                label = {
+                    x: xLabel,
+                    y: yLabel,
+                    fontFamily: params.label.fontFamily,
+                    fontSize: params.label.fontSize,
+                    textAnchor: 'middle',
+                    label: params.label.label
+                };
+            }
+
+            return {
+                pathParts: pathParts,
+                tick: tick,
+                label: label
+            };
         });
+
+        // var label = ko.pureComputed(function () {
+
+        // });
+
+        // text({
+        //     '<!-- ko if: label -->',
+        //     text({
+        //         dataBind: {
+        //             attr: {
+        //                 x: 'xLabel',
+        //                 y: 'yLabel',
+        //                 'font-family': 'fontFamily',
+        //                 'font-size': 'fontSize',
+        //                 'text-anchor': '"middle"',
+        //                 transform: 'textFilter'
+        //             },
+        //             text: 'label'
+        //         }
+        //     }),
+        //     '<!-- /ko -->',
+        // })
 
         function doMouseOver() {
             if (tick.showTooltip) {
@@ -69,26 +116,46 @@ define([
         }
 
         return {
-            pathParts: pathParts,
-            tick: tick,
+            vm: vm,
             doMouseOver: doMouseOver,
             doMouseOut: doMouseOut
         };
     }
 
     function template() {
-        return path({
-            dataBind: {
-                attr: {
-                    d: 'pathParts',
-                    fill: 'tick.color'
-                },
-                event: {
-                    mouseover: 'doMouseOver',
-                    mouseout: 'doMouseOut'
+        return [
+            '<!-- ko with: vm -->',
+            path({
+                dataBind: {
+                    attr: {
+                        d: 'pathParts',
+                        fill: 'tick.color'
+                    },
+                    // event: {
+                    //     mouseover: '$component.doMouseOver',
+                    //     mouseout: '$component.doMouseOut'
+                    // }
                 }
-            }
-        });
+            }),
+            '<!-- /ko -->',
+            '<!-- ko if: vm().label -->',
+            '<!-- ko with: vm().label -->',
+            text({
+                dataBind: {
+                    attr: {
+                        x: 'x',
+                        y: 'y',
+                        'font-family': 'fontFamily',
+                        'font-size': 'fontSize',
+                        'text-anchor': '"middle"'
+                            // transform: 'textFilter'
+                    },
+                    text: 'label'
+                }
+            }),
+            '<!-- /ko -->',
+            '<!-- /ko -->',
+        ];
     }
 
     function component() {

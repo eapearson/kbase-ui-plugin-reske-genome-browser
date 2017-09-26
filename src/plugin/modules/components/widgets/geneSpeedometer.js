@@ -43,47 +43,6 @@ define([
 
     // STRUCTURE MAKERS
 
-    function makeRadial(config, data, ui, path) {
-        var typeData = getProp(data, path).best_term;
-        var typeConfig = getProp(config.goConfig, path);
-        if (!typeData) {
-            return;
-        }
-        var color = makeColor(typeConfig.color, 1);
-        var showTooltip = ko.observable(false);
-        // The data to show in the tooltip when needed.
-        var tooltipData = {
-            type: typeConfig.label,
-            term: typeData,
-        };
-        showTooltip.subscribe(function () {
-            if (showTooltip()) {
-                ui.tooltip({
-                    data: tooltipData
-                });
-            } else {
-                ui.tooltip(null);
-            }
-        });
-        var radial = {
-            // for the radial 
-            x: config.x,
-            y: config.y,
-            angle: typeData.term_position - (config.offset || 0),
-            length: typeConfig.radial.length,
-            width: typeConfig.radial.width || config.radialWidth,
-            color: color,
-            // for the label 
-            fontFamily: config.fontFamily,
-            fontSize: config.fontSize,
-            label: ko.observable(typeConfig.label),
-            // for toolip / mouseover
-            description: typeConfig.description + ' (' + numeral(typeData.term_position).format('0.00') + ')',
-            showTooltip: showTooltip
-        };
-        return radial;
-    }
-
     function makeSemiRadial(config, data, ui, path) {
         var typeData = getProp(data, path).best_term;
         var typeConfig = getProp(config.goConfig, path);
@@ -124,28 +83,6 @@ define([
             showTooltip: showTooltip
         };
         return radial;
-    }
-
-    function makeTypeRing(config, data, path, index) {
-        var radius = config.minRadius + config.ringWidth * index;
-
-        // Note, rings don't even use data.
-        // Note: this design, building rings purely on the position of the 
-        // ring in the configuration, implies that we build rings even if there
-        // is no data for the ring, which we don't discover here because we
-        // don't inspect the data at all.
-        return {
-            ring: {
-                x: config.x,
-                y: config.y,
-                radius: radius,
-                width: config.ringWidth,
-                border: {
-                    color: 'silver',
-                    width: 1
-                }
-            }
-        };
     }
 
     function makeTypeSemiRing(config, data, path, index) {
@@ -213,45 +150,41 @@ define([
         });
     }
 
-    function makeTypeTicks(config, data, ui, path, index) {
-        var typeData = getProp(data, path);
-        var typeConfig = getProp(config.goConfig, path);
+    // text({
+    //     dataBind: {
+    //         attr: {
+    //             x: 'xLabel',
+    //             y: 'yLabel',
+    //             'font-family': 'fontFamily',
+    //             'font-size': 'fontSize',
+    //             'text-anchor': '"middle"',
+    //             transform: 'textFilter'
+    //         },
+    //         text: 'label'
+    //     }
 
-        if (!typeData) {
-            return [];
-        }
+    function makeDialTicks(config, it) {
+        var ticks = [0, 0.25, 0.5, 0.75, 1];
+        var theta = 0.005;
 
-        return typeData.terms.map(function (termData) {
-            var radius = config.minRadius + config.ringWidth * index;
-            // try thihs...
-            var theta = (config.tickLength / (2 * Math.PI * radius));
-            var showTooltip = ko.observable(false);
-            var tooltipData = {
-                type: typeConfig.label,
-                term: termData,
-            };
-            showTooltip.subscribe(function () {
-                if (showTooltip()) {
-                    ui.tooltip({
-                        data: tooltipData
-                    });
-                } else {
-                    ui.tooltip(null);
-                }
-            });
-            var tick = {
-                x: config.x,
-                y: config.y,
-                start: termData.term_position - (config.offset || 0) - (theta / 2),
-                // theta: config.tickTheta,
-                theta: theta,
-                radius: radius,
-                width: config.ringWidth,
-                color: termData.color,
-                showTooltip: showTooltip
-            };
+        return ticks.map(function (tick) {
             return {
-                tick: tick
+                tick: {
+                    x: config.x,
+                    y: config.y,
+                    start: 0.5 * tick - (theta / 2) - 0.25,
+                    theta: theta,
+                    radius: config.minRadius + it.rings.length * config.ringWidth,
+                    width: 5,
+                    color: 'black'
+                },
+                label: {
+                    offset: 10,
+                    fontFamily: config.fontFamily,
+                    fontSize: config.fontSize,
+                    textAnchor: 'middle',
+                    label: String(tick)
+                }
             };
         });
     }
@@ -323,14 +256,27 @@ define([
                     .filter(function (ticks) {
                         return ticks ? true : false;
                     }),
+
                 center: {
                     x: config.x,
                     y: config.y,
                     radius: 6,
                     color: 'silver'
+                },
+
+                label: {
+                    text: {
+                        x: config.x,
+                        y: config.y - 15,
+                        fontFamily: config.fontfamily,
+                        fontSize: '7.5px',
+                        textAnchor: 'middle',
+                        text: 'Distance from User Term'
+                    }
                 }
             };
             it.base = makeBase(config, it);
+            it.ticks2 = makeDialTicks(config, it);
             return it;
         });
 
@@ -343,11 +289,7 @@ define([
         return svg({
             dataBind: {
                 style: {
-                    // width: 'config.width'
-                    // width: 'config.width * config.scale',
-                    // height: 'config.height * config.scale',
                     preserveAspectRatio: '"xMidYMid meet"'
-
                 },
                 attr: {
                     viewBox: '"0 0 " + config.width + " " + config.height'
@@ -356,12 +298,7 @@ define([
             style: {
                 width: '100%'
             }
-            // style: {
-            //     outline: '1px silver solid',
-            //     margin: '10px'
-            // }
         }, [
-
             komponent({
                 name: 'reske/widget/line',
                 params: {
@@ -384,6 +321,15 @@ define([
                 }
             }),
             '<!-- /ko -->',
+            '<!-- ko foreach: ticks2 -->',
+            komponent({
+                name: 'reske/widget/ringTick',
+                params: {
+                    tick: 'tick',
+                    label: 'label'
+                }
+            }),
+            '<!-- /ko -->',
             '<!-- ko with: radials.kbase -->',
             komponent({
                 name: 'reske/widget/radial',
@@ -400,6 +346,14 @@ define([
                 }
             }),
             '<!-- /ko -->',
+            '<!-- ko with: label -->',
+            komponent({
+                name: 'reske/widget/text',
+                params: {
+                    text: 'text'
+                }
+            }),
+            '<!-- /ko -->',
             komponent({
                 name: 'reske/widget/circle',
                 params: {
@@ -409,35 +363,6 @@ define([
                     color: 'center.color'
                 }
             })
-            // '<!-- ko if: info.text() -->',
-            // text({
-            //     dataBind: {
-            //         attr: {
-            //             x: 'info.x',
-            //             y: 'info.y',
-            //             'font-family': 'info.font.family',
-            //             'font-size': 'info.font.size'
-            //         },
-            //         text: 'info.text',
-            //         // visible: 'info.text() && info.text().length > 0'
-            //     }
-            // }),
-            // '<!-- /ko -->',
-            // '<!-- ko ifnot: info.text() -->',
-            // text({
-            //     dataBind: {
-            //         attr: {
-            //             x: 'info.x',
-            //             y: 'info.y',
-            //             'font-family': 'info.font.family',
-            //             'font-size': 'info.font.size'
-            //         },
-            //     },
-            //     style: {
-            //         fontStyle: 'italic'
-            //     }
-            // }, 'Hover over an element above to see more about it.'),
-            // '<!-- /ko -->'
         ]);
     }
 
