@@ -63,6 +63,7 @@ define([
                             genome_ref: selectedGenome().ref
                         }])
                         .spread(function (featuresList) {
+                            // console.log('features', featuresList);
                             cachedFeatures = featuresList.map(function (item, index) {
                                 item.rowNumber = index;
                                 return item;

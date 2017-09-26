@@ -29,9 +29,9 @@ define([
                     fontSize: '100%',
                     // textDecoration: 'underline'
                     padding: '4px',
-                    color: 'black',
-                    fontWeight: 'bold',
-                    backgroundColor: 'silver'
+                    fontWeight: 'normal',
+                    backgroundColor: 'gray',
+                    color: 'white'
                 }
             }, label),
             '<!-- ko if: $data.' + type + ' && ' + type + '.terms.length > 0 -->',
@@ -117,9 +117,9 @@ define([
                     fontSize: '100%',
                     // textDecoration: 'underline'
                     padding: '4px',
-                    color: 'black',
-                    fontWeight: 'bold',
-                    backgroundColor: 'silver'
+                    color: 'white',
+                    fontWeight: 'normal',
+                    backgroundColor: 'gray'
                 }
             }, label),
             '<!-- ko if: $data.' + type + ' && ' + type + '.terms.length > 0 -->',

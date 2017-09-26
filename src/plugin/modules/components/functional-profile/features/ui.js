@@ -72,6 +72,9 @@ define([
         // simply caching...
         var cachedFeatures;
 
+        var featuresSort = ko.observable();
+        var featuresSortDirty = ko.observable();
+
         function fetchFeatures() {
             return Promise.try(function () {
                     if (cachedFeatures) {
@@ -81,6 +84,8 @@ define([
                             genome_ref: selectedGenome().ref
                         }])
                         .spread(function (featuresList) {
+                            // console.log('features', featuresList);
+
                             cachedFeatures = featuresList.map(function (item, index) {
                                 item.rowNumber = index;
                                 return item;
@@ -106,6 +111,31 @@ define([
                         });
                     }
 
+                    // sorting ...
+                    if (featuresSortDirty()) {
+                        if (featuresSort()) {
+                            var field = featuresSort().field;
+                            var direction = featuresSort().direction;
+                            var d = direction === 'descending' ? -1 : 1;
+                            allFeatures.sort(function (a, b) {
+                                switch (field) {
+                                case 'distance':
+                                    return d * (a.distance - b.distance);
+                                case 'gene':
+                                    return d * (a.feature_name.localeCompare(b.feature_name));
+                                case 'userTerm':
+                                    return d * (a.reference_term_name.localeCompare(b.reference_term_name));
+                                case 'inferredTerm':
+                                    return d * (a.kbase_term_name.localeCompare(b.kbase_term_name));
+                                }
+                            });
+                        } else {
+                            // umm, do we need to restore to a natural order, or 
+                            // are we always sorted if we've ever sorted?
+                        }
+                    }
+
+
                     totalCount(allFeatures.length);
                     isSearching(false);
 
@@ -123,7 +153,7 @@ define([
         var error = ko.observable();
 
         function normalizeError(error) {
-            console.log('normalizing: ', error);
+            // console.log('normalizing: ', error);
             return {
                 message: error.message
             };
@@ -148,6 +178,25 @@ define([
                     isSearching(false);
                 });
         }
+
+
+        // function sortFeatures() {
+        //     if (featuresSort()) {
+        //         var field = featuresSort().field;
+        //         var direction = featuresSort().direction;
+        //         var d = direction === 'descending' ? -1 : 1;
+        //         features.sort(function (a, b) {
+        //             switch (field) {
+        //             case 'distance':
+        //                 return d * (a.distance - b.distance);
+        //             }
+        //         });
+        //     }
+        // }
+        featuresSort.subscribe(function () {
+            featuresSortDirty(true);
+            updateFeatures();
+        });
 
         // function start() {
         //     return Promise.all([
@@ -195,6 +244,8 @@ define([
                 // This is from the parent environment.
                 selectedFeature: selectedFeature,
                 fetchingFeatures: fetchingFeatures,
+
+                featuresSort: featuresSort,
 
                 availableRowHeight: availableRowHeight,
 

@@ -33,7 +33,9 @@
 
 .kb-flex-table .kb-flex-table-row.kb-flex-table-header {
     height: 25px;
-    background-color: silver
+    background-color: gray;
+    color: white;
+    cursor: normal;
 }
 
 .kb-flex-table .kb-flex-table-row .kb-flex-table-cell {
@@ -42,4 +44,5 @@
     text-overflow: ellipsis;
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
 }

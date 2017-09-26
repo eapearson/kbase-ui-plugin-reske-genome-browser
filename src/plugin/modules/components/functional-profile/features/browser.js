@@ -9,11 +9,14 @@ define([
 
     var t = html.tag,
         div = t('div'),
+        span = t('span'),
         p = t('p');
 
     function viewModel(params, componentInfo) {
 
         var search = params.searchVM;
+
+        // console.log('search vm???', search);
 
         var height = ko.observable();
         height.subscribe(function (newValue) {
@@ -49,6 +52,7 @@ define([
         });
 
         function doSelectFeature(data) {
+            // console.log('data', data);
             search.selectedFeature(data);
         }
         var selectedFeatureGuid = ko.pureComputed(function () {
@@ -57,11 +61,123 @@ define([
             }
             return search.selectedFeature().feature_guid;
         });
+
+        var columns = {
+            distance: {
+                id: 'distance',
+                label: 'Distance',
+                sort: {
+                    direction: ko.observable('ascending'),
+                    active: ko.observable(false),
+                }
+            },
+            gene: {
+                id: 'gene',
+                label: 'Gene',
+                sort: {
+                    direction: ko.observable('ascending'),
+                    active: ko.observable(false),
+                }
+            },
+            userTerm: {
+                id: 'userTerm',
+                label: 'User term',
+                sort: {
+                    direction: ko.observable('ascending'),
+                    active: ko.observable(false),
+                }
+            },
+            inferredTerm: {
+                id: 'inferredTerm',
+                label: 'Inferred term',
+                sort: {
+                    direction: ko.observable('ascending'),
+                    active: ko.observable(false),
+                }
+            }
+        };
+
+        var currentSortColumn = ko.observable();
+
+        function doSort(data) {
+            var newColumn = data.id;
+            // handle direction
+            var direction;
+            var oldColumn = currentSortColumn();
+            if (oldColumn) {
+                if (oldColumn === newColumn) {
+                    direction = columns[newColumn].sort.direction() === 'ascending' ? 'descending' : 'ascending';
+                } else {
+                    direction = columns[newColumn].sort.direction();
+                }
+            } else {
+                direction = columns[newColumn].sort.direction();
+            }
+
+            // do the actual sort
+            search.featuresSort({
+                field: newColumn,
+                direction: direction
+            });
+
+            // Finally flip the sort column.
+            if (oldColumn && oldColumn !== newColumn) {
+                columns[oldColumn].sort.active(false);
+            }
+            columns[newColumn].sort.active(true);
+            columns[newColumn].sort.direction(direction);
+            currentSortColumn(newColumn);
+        }
+
         return {
             doSelectFeature: doSelectFeature,
             selectedFeatureGuid: selectedFeatureGuid,
-            search: search
+            search: search,
+            columns: columns,
+            doSort: doSort
         };
+    }
+
+    function buildHeaderColumn(id, label, flex) {
+        return div({
+            dataBind: {
+                with: 'columns.' + id
+            },
+            style: {
+                flex: flex,
+                cursor: 'pointer'
+            },
+            class: 'kb-flex-table-cell'
+        }, div({
+            dataBind: {
+                click: '$component.doSort'
+            },
+            style: {
+                flex: '1 1 0px',
+                height: '25px',
+                overflowX: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+            }
+        }, [
+            span({
+                dataBind: {
+                    css: {
+                        'fa-sort-desc': 'sort.active() && sort.direction() === "descending"',
+                        'fa-sort-asc': 'sort.active() && sort.direction() === "ascending"',
+                        'fa-sort': '!sort.active()'
+                    },
+                    style: {
+                        color: '!sort.active() ? "silver" : null'
+                    }
+                },
+                style: {
+                    marginRight: '2px'
+                },
+                class: 'fa'
+            }),
+            label
+        ]));
     }
 
     function buildHeader() {
@@ -69,34 +185,16 @@ define([
             class: 'kb-flex-table-header kb-flex-table-row',
             name: 'header'
         }, [
+            buildHeaderColumn('gene', 'Gene', '3 3 30%'),
+            buildHeaderColumn('distance', 'Distance', '1 1 10%'),
+            buildHeaderColumn('userTerm', 'User term', '3 3 30%'),
+            buildHeaderColumn('inferredTerm', 'Inferred term', '3 3 30%'),
             div({
+                class: 'kb-flex-table-cell',
                 style: {
-                    flex: '3 3 30%',
-                    fontWeight: 'bold'
-                },
-                class: 'kb-flex-table-cell'
-            }, 'Gene'),
-            div({
-                style: {
-                    flex: '1 1 10%',
-                    fontWeight: 'bold'
-                },
-                class: 'kb-flex-table-cell'
-            }, 'Distance'),
-            div({
-                style: {
-                    flex: '3 3 30%',
-                    fontWeight: 'bold'
-                },
-                class: 'kb-flex-table-cell'
-            }, 'User term'),
-            div({
-                style: {
-                    flex: '3 3 30%',
-                    fontWeight: 'bold'
-                },
-                class: 'kb-flex-table-cell'
-            }, 'Inferred term'),
+                    flex: '0 0 1.5em'
+                }
+            }, [])
         ]);
     }
 
@@ -111,14 +209,36 @@ define([
             class: 'kb-flex-table-row'
         }, [
             div({
-                dataBind: {
-                    text: 'feature_name'
-                },
                 class: 'kb-flex-table-cell',
                 style: {
                     flex: '3 3 30%'
-                },
-            }),
+                }
+            }, [
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        height: '25px',
+                        overflowX: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    },
+                    dataBind: {
+                        text: 'feature_name'
+                    }
+                }),
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        height: '25px',
+                        overflowX: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                    },
+                    dataBind: {
+                        text: 'feature_function'
+                    }
+                }),
+            ]),
             div({
                 dataBind: {
                     numberText: 'distance',
@@ -185,6 +305,46 @@ define([
                     }
                 })
             ]),
+            div({
+                class: 'kb-flex-table-cell',
+                style: {
+                    flex: '0 0 1.5em'
+                }
+            }, [
+                div({
+                    dataBind: {
+                        style: {
+                            'background-color': 'with_fitness ? "rgba(33, 140, 56, 0.5)" : "rgba(230,230,230, 0.5)"',
+                            'color': 'with_fitness ? "black" : "rgba(0,0,0, 0.5)"'
+                        }
+                    },
+                    style: {
+                        // backgroundColor: 'rgba(33, 140, 56, 0.5)',
+                        height: '25px',
+                        overflow: 'hidden',
+                        color: 'black',
+                        textAlign: 'center'
+                    }
+                }, ''),
+                div({
+                    dataBind: {
+                        // style: {
+                        //     visibility: 'with_expression ? "visible" : "hidden"'
+                        // }
+                        style: {
+                            'background-color': 'with_expression ? "rgba(130, 61, 142, 0.5)" : "rgba(230,230,230, 0.5)"',
+                            'color': 'with_expression ? "black" : "rgba(0,0,0, 0.5)"'
+                        }
+                    },
+                    style: {
+                        // backgroundColor: 'rgba(130, 61, 142, 0.5)',
+                        height: '25px',
+                        overflow: 'hidden',
+                        color: 'black',
+                        textAlign: 'center'
+                    }
+                }, '')
+            ])
         ]);
     }
 
@@ -238,7 +398,8 @@ define([
                 style: {
                     flex: '1 1 0px',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    padding: '0 0 0 4px'
                 },
                 name: 'table'
             }, [

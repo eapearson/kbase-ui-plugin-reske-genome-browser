@@ -8,8 +8,17 @@
 }
 
 .component-reske-gene-legend table thead tr {
-    background-color: silver;
+    font-weight: normal;
+    background-color: gray;
+    color: white;
     border-bottom: 1px gray solid;
+    /* letter-spacing: 0.08em; */
+}
+
+.component-reske-gene-legend table thead tr th {
+    font-weight: normal;
+    /* background-color: gray; */
+    /* color: white; */
 }
 
 .component-reske-gene-legend table tbody tr:nth-child(1) {
@@ -63,9 +72,9 @@
     width: 10%
 }
 
-.component-reske-gene-legend table tr th {
+
+/* .component-reske-gene-legend table tr th {
     border: none;
     font-weight: normal;
-    /* font-style: italic; */
     font-weight: bold;
-}
+} */

@@ -4,21 +4,25 @@ define([
     'knockout-plus',
     'numeral',
     'kb_common/jsonRpc/genericClient',
-    'kb_common/jsonRpc/dynamicServiceClient'
+    'kb_common/jsonRpc/dynamicServiceClient',
+    'kb_service/utils'
 ], function (
     Promise,
     html,
     ko,
     numeral,
     GenericClient,
-    DynamicServiceClient
+    DynamicServiceClient,
+    serviceUtils
 ) {
     'use string';
 
     var t = html.tag,
         div = t('div'),
-        h3 = t('h3'),
-        h2 = t('h2');
+        span = t('span'),
+        button = t('button'),
+        h2 = t('h2'),
+        h3 = t('h3');
 
     function calcScalex(value, scaleMin, scaleMax) {
         // min and max are -ish
@@ -64,7 +68,7 @@ define([
 
         var vm;
 
-        var dsClient = new DynamicServiceClient({
+        var geneOntologyDecorator = new DynamicServiceClient({
             url: runtime.config('services.service_wizard.url'),
             token: runtime.service('session').getAuthToken(),
             module: 'GeneOntologyDecorator'
@@ -115,7 +119,7 @@ define([
             // CORE DATA FETCHING 
 
             function fetchFeatures() {
-                return dsClient.callFunc('listFeatures', [{
+                return geneOntologyDecorator.callFunc('listFeatures', [{
                         genome_ref: selectedGenome().ref
                     }])
                     .spread(function (featuresList) {
@@ -124,7 +128,7 @@ define([
             }
 
             function fetchTermRelations() {
-                return dsClient.callFunc('getTermRelations', [{
+                return geneOntologyDecorator.callFunc('getTermRelations', [{
                         feature_guid: selectedFeature().feature_guid
                     }])
                     .spread(function (result) {
@@ -139,6 +143,15 @@ define([
                 ref: params.ref
             });
 
+            var genome = {
+                ref: params.ref,
+                name: params.genomeInfo.metadata.Name
+            };
+
+            function doViewGenome(data) {
+                window.open('#dataview/' + data.ref);
+            }
+
             function doUnselectFeature() {
                 selectedFeature(null);
             }
@@ -147,6 +160,7 @@ define([
             var fetchingFeatures = ko.observable(false);
             var features = ko.observableArray();
             var selectedFeature = ko.observable();
+
 
             function updateFeatures() {
                 fetchingFeatures(true);
@@ -163,6 +177,8 @@ define([
                         fetchingFeatures(false);
                     });
             }
+
+
 
             // Term Relations
             var termRelations = ko.observable();
@@ -290,6 +306,9 @@ define([
                 termRelations: termRelations,
                 layout: layout,
 
+                genome: genome,
+                doViewGenome: doViewGenome,
+
                 // LEGACY, for now
                 // But there is some value in the top level vm being passed through as a single
                 // property...
@@ -316,89 +335,126 @@ define([
                 style: {
                     flex: '1 1 0px',
                     display: 'flex',
-                    fiexDirection: 'column'
+                    flexDirection: 'column'
                 }
             }, [
-                // the genes column
                 div({
                     style: {
-
-                        flex: '1 1 0px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        overflowX: 'hidden'
+                        flex: '0 0 2em',
+                        paddingLeft: '4px'
                     }
                 }, [
+                    '<!-- ko with: genome -->',
+                    h2({
+                        dataBind: {
+                            text: 'name'
+                        },
+                        style: {
+                            display: 'inline-block'
+                        }
+                    }),
                     div({
                         style: {
-                            flex: '0 0 50px'
+                            display: 'inline-block'
                         }
-                    }, h2({
-                        style: {
-                            textAlign: 'center'
-                        }
-                    }, 'Genes')),
+                    }, button({
+                        dataBind: {
+                            click: '$parent.doViewGenome'
+                        },
+                        class: 'btn btn-default btn-flat'
+                    }, span({
+                        class: 'fa fa-binoculars'
+                    }))),
+                    '<!-- /ko -->'
+                ]),
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        display: 'flex',
+                        fiexDirection: 'column'
+                    }
+                }, [
+                    // the genes column
                     div({
                         style: {
+
                             flex: '1 1 0px',
                             display: 'flex',
                             flexDirection: 'column',
                             overflowX: 'hidden'
                         }
-                    }, komponent({
-                        name: 'reske/functional-profile/features/ui',
-                        params: {
-                            runtime: 'runtime',
-                            selectedGenome: 'selectedGenome',
-                            selectedFeature: 'selectedFeature',
-                            fetchingFeatures: 'fetchingFeatures'
-                        }
-                    }))
+                    }, [
+                        div({
+                            style: {
+                                flex: '0 0 50px'
+                            }
+                        }, h3({
+                            style: {
+                                textAlign: 'center'
+                            }
+                        }, 'Genes')),
+                        div({
+                            style: {
+                                flex: '1 1 0px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflowX: 'hidden'
+                            }
+                        }, komponent({
+                            name: 'reske/functional-profile/features/ui',
+                            params: {
+                                runtime: 'runtime',
+                                selectedGenome: 'selectedGenome',
+                                selectedFeature: 'selectedFeature',
+                                fetchingFeatures: 'fetchingFeatures'
+                            }
+                        }))
 
-                ]),
-                // the functional profile column
-                div({
-                    style: {
-                        flex: '1 1 0px',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }
-                }, [
+                    ]),
+                    // the functional profile column
                     div({
                         style: {
-                            width: '100%',
-                            flex: '0 0 50px'
-                        }
-                    }, h2({
-                        style: {
-                            textAlign: 'center'
-                        }
-                    }, 'Functional Profile')),
-                    div({
-                        style: {
-                            width: '100%',
                             flex: '1 1 0px',
-                            overflowY: 'auto'
+                            display: 'flex',
+                            flexDirection: 'column'
                         }
-                    }, komponent({
-                        name: 'reske/functional-profile/distance-widget',
-                        params: {
-                            runtime: 'runtime',
-                            vm: 'vm'
-                        }
-                    }))
+                    }, [
+                        div({
+                            style: {
+                                width: '100%',
+                                flex: '0 0 50px'
+                            }
+                        }, h3({
+                            style: {
+                                textAlign: 'center'
+                            }
+                        }, 'Functional Profile')),
+                        div({
+                            style: {
+                                width: '100%',
+                                flex: '1 1 0px',
+                                overflowY: 'auto'
+                            }
+                        }, komponent({
+                            name: 'reske/functional-profile/distance-widget',
+                            params: {
+                                runtime: 'runtime',
+                                vm: 'vm'
+                            }
+                        }))
 
-                    // div({
-                    //     dataBind: {
-                    //         component: {
-                    //             name: '"reske/functional-profile/distance-widget"',
-                    //             params: {
-                    //                 runtime: 'runtime',
-                    //                 vm: 'vm'
-                    //             }
-                    //         }
-                    //     }
-                    // }))
+                        // div({
+                        //     dataBind: {
+                        //         component: {
+                        //             name: '"reske/functional-profile/distance-widget"',
+                        //             params: {
+                        //                 runtime: 'runtime',
+                        //                 vm: 'vm'
+                        //             }
+                        //         }
+                        //     }
+                        // }))
+                    ])
                 ])
             ]);
         }
@@ -414,9 +470,30 @@ define([
 
         function start(params) {
             runtime.send('ui', 'setTitle', 'Knowledge Engine Functional Profile Viewer');
-            vm = viewModel(params);
-            render();
-            ko.applyBindings(vm, container);
+            var ref = params.ref;
+            var client = new GenericClient({
+                url: runtime.config('services.workspace.url'),
+                token: runtime.service('session').getAuthToken(),
+                module: 'Workspace'
+            });
+            return client.callFunc('get_object_info3', [{
+                    objects: [{
+                        ref: ref
+                    }],
+                    includeMetadata: 1,
+                    ignoreErrors: 0
+                }])
+                .spread(function (info) {
+                    // console.log('got', info);
+                    var objectInfo = serviceUtils.objectInfoToObject(info.infos[0]);
+                    // console.log('genome info...', objectInfo);
+                    vm = viewModel({
+                        ref: ref,
+                        genomeInfo: objectInfo
+                    });
+                    render();
+                    ko.applyBindings(vm, container);
+                });
         }
 
         function stop() {
