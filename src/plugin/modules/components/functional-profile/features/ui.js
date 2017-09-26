@@ -167,6 +167,10 @@ define([
                     selectedFeature(foundFeatures[0]);
                     features.removeAll();
                     foundFeatures.forEach(function (feature) {
+                        // fix up feature_function
+                        if (feature.feature_function === 'null') {
+                            feature.feature_function = null;
+                        }
                         features.push(feature);
                     });
                 })
