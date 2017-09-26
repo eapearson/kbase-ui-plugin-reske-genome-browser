@@ -200,16 +200,12 @@ define([
                     display: 'flex',
                     alignItems: 'flex-end'
                 }
-            }, div({
-                dataBind: {
-                    component: {
-                        name: '"reske/functional-profile/distance-widget-details"',
-                        params: {
-                            config: 'config',
-                            vm: 'vm',
-                            ui: 'ui'
-                        }
-                    }
+            }, komponent({
+                name: 'reske/functional-profile/distance-widget-details',
+                params: {
+                    config: 'config',
+                    vm: 'vm',
+                    ui: 'ui'
                 }
             }))
         ]);

@@ -164,7 +164,8 @@ define([
     function buildJustHeader() {
         return table({
             style: {
-                marginBottom: '0'
+                marginBottom: '0',
+                borderBottom: '2px silver solid'
             }
         }, [
             thead(

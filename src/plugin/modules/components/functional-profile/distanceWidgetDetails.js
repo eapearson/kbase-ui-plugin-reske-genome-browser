@@ -105,7 +105,10 @@ define([
 
     function template() {
         return div({
-            class: 'reske_functional-profile_distance-widget-details'
+            class: 'reske_functional-profile_distance-widget-details',
+            style: {
+                margin: '0 0 10px 30px'
+            }
         }, [
             // div({
             //     style: {
